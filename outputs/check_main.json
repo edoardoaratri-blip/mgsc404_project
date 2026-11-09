@@ -1,0 +1,13 @@
+{
+  "plan_file": "outputs/plan_main.json",
+  "verdict": "ACCEPT",
+  "n_violations": 0,
+  "violations": [],
+  "recomputed": {
+    "tl_cost": 178327.95,
+    "ltl_cost": 962435.0,
+    "total_cost": 1140762.95,
+    "n_tours": 168,
+    "n_ltl": 492
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "plan_file": "outputs/tests/plan_overload.json",
+  "verdict": "REJECT",
+  "n_violations": 19,
+  "violations": [
+    {
+      "code": "CAPACITY_WEIGHT",
+      "rule": "R3.1",
+      "tour_id": 58,
+      "seq": 3,
+      "detail": "50000 lb > 45000"
+    },
+    {
+      "code": "TIME_FLOW",
+      "rule": "R4.1",
+      "tour_id": 58,
+      "seq": 3,
+      "detail": "arrival 11.5 but travel gives 13.25"
+    },
+    {
+      "code": "TIME_FLOW",
+      "rule": "R2.4",
+      "tour_id": 58,
+      "seq": 3,
+      "detail": "service starts 11.5 before arrival 13.25"
+    },
+    {
+      "code": "WINDOW",
+      "rule": "R2.2",
+      "tour_id": 58,
+      "seq": 3,
+      "detail": "service 11.5-12.0 outside window [8.0,8.75] and hours [6,22]"
+    },
+    {
+      "code": "TIME_FLOW",
+      "rule": "R4.1",
+      "tour_id": 58,
+      "seq": 4,
+      "detail": "arrival 11.5 but travel gives 15.5"
+    },
+    {
+      "code": "TIME_FLOW",
+      "rule": "R2.4",
+      "tour_id": 58,
+      "seq": 4,
+      "detail": "service starts 12.0 before arrival 15.5"
+    },
+    {
+      "code": "TIME_FLOW",
+      "rule": "R4.1",
+      "tour_id": 58,
+      "seq": 5,
+      "detail": "arrival 14.0 but travel gives 17.5"
+    },
+    {
+      "code": "TIME_FLOW",
+      "rule": "R2.4",
+      "tour_id": 58,
+      "seq": 5,
+      "detail": "service starts 14.0 before arrival 17.5"
+    },
+    {
+      "code": "BREAK",
+      "rule": "R6.4",
+      "tour_id": 58,
+      "seq": 6,
+      "detail": "9.0 h of driving since the last break"
+    },
+    {
+      "code": "TIME_FLOW",
+      "rule": "R4.1",
+      "tour_id": 58,
+      "seq": 6,
+      "detail": "arrival 15.5 but travel gives 19.5"
+    },
+    {
+      "code": "TIME_FLOW",
+      "rule": "R2.4",
+      "tour_id": 58,
+      "seq": 6,
+      "detail": "service starts 15.5 before arrival 19.5"
+    },
+    {
+      "code": "WINDOW",
+      "rule": "R2.2",
+      "tour_id": 58,
+      "seq": 6,
+      "detail": "service 15.5-16.0 outside window [16.5,17.5] and hours [6,22]"
+    },
+    {
+      "code": "BREAK",
+      "rule": "R6.4",
+      "tour_id": 58,
+      "seq": null,
+      "detail": "11.0 h of driving since the last break"
+    },
+    {
+      "code": "TIME_FLOW",
+      "rule": "R4.1",
+      "tour_id": 58,
+      "seq": null,
+      "detail": "return 15.5 but travel gives 22.0"
+    },
+    {
+      "code": "SHIFT_DEPOT",
+      "rule": "R2.6",
+      "tour_id": 58,
+      "seq": null,
+      "detail": "returns 22.0 after shift/depot closing"
+    },
+    {
+      "code": "DRIVE_LIMIT",
+      "rule": "R4.2",
+      "tour_id": 58,
+      "seq": null,
+      "detail": "11.0 h driving > 8.0"
+    },
+    {
+      "code": "DUTY_LIMIT",
+      "rule": "R4.3",
+      "tour_id": 58,
+      "seq": null,
+      "detail": "14.0 h duty > 12.0"
+    },
+    {
+      "code": "COST_MISMATCH",
+      "rule": "R5.2",
+      "tour_id": 58,
+      "seq": null,
+      "detail": "plan 228 mi / CAD 1000, recomputed 507.0 mi / CAD 1315.40"
+    },
+    {
+      "code": "COST_MISMATCH",
+      "rule": "R5",
+      "tour_id": null,
+      "seq": null,
+      "detail": "plan total CAD 36246.15, recomputed CAD 34185.65"
+    }
+  ],
+  "recomputed": {
+    "tl_cost": 24715.4,
+    "ltl_cost": 9470.25,
+    "total_cost": 34185.65,
+    "n_tours": 24,
+    "n_ltl": 7
+  }
+}

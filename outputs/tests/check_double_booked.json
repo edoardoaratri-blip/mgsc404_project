@@ -1,0 +1,21 @@
+{
+  "plan_file": "outputs/tests/plan_double_booked.json",
+  "verdict": "REJECT",
+  "n_violations": 1,
+  "violations": [
+    {
+      "code": "TRACTOR_DOUBLE_BOOKED",
+      "rule": "R4.6",
+      "tour_id": 98,
+      "seq": null,
+      "detail": "tractor T01 has tours 58 and 98 on day 1"
+    }
+  ],
+  "recomputed": {
+    "tl_cost": 24400.0,
+    "ltl_cost": 11846.15,
+    "total_cost": 36246.15,
+    "n_tours": 24,
+    "n_ltl": 8
+  }
+}
