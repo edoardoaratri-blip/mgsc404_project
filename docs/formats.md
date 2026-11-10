@@ -74,7 +74,7 @@ Written by `approach_a.py` and by `heuristic.py` in the same format, read by `ch
   "summary": {"status": "OPTIMAL", "total_cost": 36246.15, "all_ltl_baseline": 93298.35, "savings_pct": 61.15,
               "...": "more results, see below"},
   "solver_per_day": [
-    {"day": 1, "status": "OPTIMAL", "objective": 11921.4, "mip_gap": 0.0, "runtime_s": 0.01,
+    {"day": 1, "status": "OPTIMAL", "objective": 11921.4, "bound": 11921.4, "mip_gap": 0.0, "runtime_s": 0.01,
      "variables": 556, "constraints": 28, "candidate_tours": 134}
   ],
   "tours": [

@@ -1,13 +1,13 @@
 # Approach A: build every feasible tour in Python, then let Gurobi select.
 #
-# Steps (same structure as the team's notebook):
-#   1. read the data                      (src/loader.py)
-#   2. LTL cost of every shipment         (src/loader.py)  -> all-LTL baseline
+# Steps:
+#   1. read the data                      
+#   2. LTL cost of every shipment 
 #   3. stop orders for a set of shipments
 #   4. evaluator: is one stop order feasible for one tractor profile, and what does it cost?
 #   5. candidate tour pool Q
-#   6. Gurobi selection model (x = tour selected, y = shipment on LTL)
-#   7. plan export (outputs/plan_<instance>.json) + summary + route printout
+#   6. Gurobi selection model 
+#   7. plan export + summary + route printout
 
 
 import itertools
@@ -27,6 +27,9 @@ MAIN = INSTANCE == "main"
 TIME_LIMIT = 600              # seconds per Gurobi solve
 MIP_GAP = 0.0
 
+TIME_LIMIT = 600              # seconds per Gurobi solve
+MIP_GAP = 0.0
+SEED = 1                      # fixed Gurobi seed: same plan on every computer
 
 # What-if experiments (step 2 of the analysis): switch ONE rule off to measure what it costs.
 #   none       all rules (the real plan)
@@ -389,6 +392,7 @@ for d in D:
     model.Params.OutputFlag = 0
     model.Params.TimeLimit = TIME_LIMIT
     model.Params.MIPGap = MIP_GAP
+    model.Params.Seed = SEED
 
     x = {}
     for t in day_Q:
@@ -420,12 +424,14 @@ for d in D:
     if model.SolCount == 0:
         raise SystemExit(f"Day {d}: no solution found (Gurobi status {model.Status}).")
     status = {GRB.OPTIMAL: "OPTIMAL", GRB.TIME_LIMIT: "TIME_LIMIT"}.get(model.Status, str(model.Status))
-    per_day.append(dict(day=d, status=status, objective=round(model.ObjVal, 2), mip_gap=model.MIPGap,
+    per_day.append(dict(day=d, status=status, objective=round(model.ObjVal, 2),
+                        bound=round(model.ObjBound, 2), mip_gap=model.MIPGap,
                         runtime_s=round(model.Runtime, 2), variables=model.NumVars,
                         constraints=model.NumConstrs, candidate_tours=len(day_Q)))
     print(f"day {d}: Gurobi {status} | {model.NumVars} variables, {model.NumConstrs} constraints | "
-          f"objective CAD {model.ObjVal:,.2f} | gap {model.MIPGap:.4%} | {model.Runtime:.2f} s")
-
+          f"objective CAD {model.ObjVal:,.2f} | bound CAD {model.ObjBound:,.2f} | "
+          f"gap {model.MIPGap:.4%} | {model.Runtime:.2f} s")
+    
     if TRACTOR_INDEXED:
         for (tid, k), var in x.items():
             if var.X > 0.5:
@@ -492,6 +498,7 @@ summary = dict(
     instance=INSTANCE, relaxation=RELAX, gurobi_version=".".join(map(str, gp.gurobi.version())),
     status="OPTIMAL" if all_optimal else "NOT ALL OPTIMAL", objective=round(objective, 2),
     max_mip_gap=max(p["mip_gap"] for p in per_day), runtime_s=round(sum(p["runtime_s"] for p in per_day), 2),
+    seed=SEED,
     total_runtime_s=round(time.time() - T_START, 2),
     candidate_tours=len(Q), complete_enumeration=COMPLETE_ENUMERATION, all_triples=ALL_TRIPLES, partner_k=PARTNER_K,
     all_ltl_baseline=round(BASELINE, 2), tl_cost=round(tl_total, 2), ltl_cost=round(ltl_total, 2),

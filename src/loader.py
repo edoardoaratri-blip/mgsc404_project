@@ -22,6 +22,7 @@ rules_df = pd.read_excel(path, "driver_rules")
 params_df = pd.read_excel(path, "parameters")
 
 # shipments
+# we transform the table into a dictionary of dictionaries
 shipments = {}
 for row in shipments_df.to_dict("records"):
     shipments[row["shipment_id"]] = row
@@ -64,11 +65,11 @@ param = dict(zip(params_df.parameter, params_df.value))
 # LTL cost of each shipment = base cost * (1 + fuel surcharge)
 ltl_cost = {}
 for s in shipments.values():
-    d = miles[(s["origin_id"], s["destination_id"])]
-    match = ltl_df[(ltl_df.freight_class == s["freight_class"])
-                   & (ltl_df.weight_from_lb <= s["weight_lb"]) & (s["weight_lb"] < ltl_df.weight_to_lb)
-                   & (ltl_df.distance_from_miles <= d) & (d < ltl_df.distance_to_miles)]
-    if len(match) != 1:
+    d = miles[(s["origin_id"], s["destination_id"])]   # distance origin-destination, not tour one
+    match = ltl_df[(ltl_df.freight_class == s["freight_class"])    # boolean mask
+                   & (ltl_df.weight_from_lb <= s["weight_lb"]) & (s["weight_lb"] < ltl_df.weight_to_lb)  # merge of two masks
+                   & (ltl_df.distance_from_miles <= d) & (d < ltl_df.distance_to_miles)]    # merge of two masks
+    if len(match) != 1:     # always one row
         raise ValueError(f"{s['shipment_id']}: {len(match)} LTL rate rows match")
     r = match.iloc[0]
     ltl_cost[s["shipment_id"]] = r.base_cost_cad * (1 + r.fuel_surcharge_pct)
@@ -84,7 +85,7 @@ for t in tractors.values():
         raise ValueError(f"{t['tractor_id']}: unknown depot or equipment")
 
 # extra data checks (rules R0.5)
-if shipments_df["shipment_id"].duplicated().any():
+if shipments_df["shipment_id"].duplicated().any():     # true if a value has already been seen
     raise ValueError("duplicate shipment_id")
 for s in shipments.values():
     for col in ("weight_lb", "linear_feet", "pallets"):
