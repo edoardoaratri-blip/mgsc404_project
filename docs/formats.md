@@ -1,27 +1,25 @@
 # Data formats between the code modules
 
-**Status:** DRAFT v0.1, to be approved by both coders before the code depends on it. After approval, change it only by agreement and log the change at the bottom.
+**Status:** v0.2, matches the code in `src/` as of 2026-11-09. Change it only by agreement and log the change at the bottom.
 
-**Why this file matters.** These two formats are the only contact points between our modules. If both sides follow them, each person can write and test their part alone, at different times, with fake data.
+**Why this file matters.** These files are the only contact points between the scripts. If every script follows them, each part can be written, tested and rerun on its own.
 
 ```
-workbook ──► loader + evaluator + candidates (Person 1) ──► candidates_<instance>.json
-                                                                    │
-                                                                    ▼
-                                             model.py (Person 2) ──► plan_<instance>.json
-                                                                    │
-                                    workbook ──► checker.py (Person 2) ──► check_<instance>.json
+workbook ──► loader.py ──► approach_a.py ──┬──► candidates_<instance>.json ──► heuristic.py ──► plan_heuristic_<instance>.json
+                                           │                               └─► ltl_reasons.py
+                                           └──► plan_<instance>.json ──► checker.py ──► check_<instance>.json
+                                                                     └─► results.py ──► results_<instance>.md / figures
 ```
 
-The checker reads **only** the plan and the workbook. It never imports `evaluator.py`, `candidates.py` or `model.py`.
+The checker reads **only** a plan and the workbook. It never imports `loader.py`, `approach_a.py` or any other project script.
 
 ## General conventions
 
 | Item | Convention |
 |---|---|
-| File type | JSON, UTF-8, written with `json.dump(obj, f, indent=2)` |
+| File type | JSON, UTF-8 |
 | `<instance>` | `simplified` or `main` |
-| Location | `outputs/` (the generated files can be large; see the note at the end) |
+| Location | `outputs/`; what-if runs (one rule switched off) go to `outputs/whatif/` with the rule in the name, e.g. `plan_main_no_lifo.json` |
 | Times | **hour of the day** as a decimal on the 0.25 grid (8.5 = 08:30), together with the `day` field. Absolute time = 24 × day + hour (rules R0.2). |
 | Durations | hours, decimal, 0.25 grid |
 | Distances | miles |
@@ -33,116 +31,84 @@ The checker reads **only** the plan and the workbook. It never imports `evaluato
 
 ## 1. Candidate tours: `outputs/candidates_<instance>.json`
 
-Written by `candidates.py` and read by `model.py`. It contains only feasible tours: the evaluator has already checked every rule in `rules.md`.
-
-```json
-{
-  "instance": "simplified",
-  "generated_by": "candidates.py",
-  "rules_version": "0.1",
-  "enumeration": "complete, up to 3 shipments per tour",
-  "tractor_groups": [
-    {"group_id": "D01-DRY-6-18", "depot_id": "D01", "equipment_id": "DRY",
-     "tractor_ids": ["T01", "T02", "T03", "T04"]}
-  ],
-  "candidates": [
-    {
-      "tour_id": "d1-D01-DRY-6-18-000123",
-      "day": 1,
-      "group_id": "D01-DRY-6-18",
-      "shipments": ["S001", "S002"],
-      "events": [
-        {"seq": 1, "type": "P", "shipment_id": "S001", "location_id": "F01",
-         "arrival": 8.0,  "service_start": 8.0,  "service_end": 8.5,  "break_after": false},
-        {"seq": 2, "type": "P", "shipment_id": "S002", "location_id": "F02",
-         "arrival": 9.5,  "service_start": 9.5,  "service_end": 10.0, "break_after": false},
-        {"seq": 3, "type": "D", "shipment_id": "S002", "location_id": "F04",
-         "arrival": 12.0, "service_start": 12.0, "service_end": 12.5, "break_after": false},
-        {"seq": 4, "type": "D", "shipment_id": "S001", "location_id": "F03",
-         "arrival": 13.5, "service_start": 13.5, "service_end": 14.0, "break_after": false}
-      ],
-      "departure": 7.0,
-      "return": 16.0,
-      "miles": 350.0,
-      "drive_hours": 7.0,
-      "duty_hours": 9.0,
-      "cost_cad": 1000.0
-    }
-  ]
-}
-```
-
-The example is the README tour: D01→F01→F02→F04→F03→D01 on day 1. Under rules R4.4 it departs at 07:00, because any later departure gives the same 9 h duty and ties go to the earliest departure.
-
-**Field rules**
-- `tour_id` is unique in the file.
-- `shipments` lists each shipment once. The number of shipments is 1 for a dedicated tour and 2 or more for a consolidated one.
-- `events` is in driving order, with `seq` starting at 1 and `2 × len(shipments)` events.
-- `break_after: true` on at most one event (main file only). It means the 0.5 h break starts at that event's `service_end`.
-- `cost_cad` is the full TL cost from rules R5.2. **The model uses this number as is and never recomputes it.**
-- If we do not use tractor groups (rules R7.3), replace `group_id` with `tractor_id` and leave out `tractor_groups`.
-
----
-
-## 2. Plan: `outputs/plan_<instance>.json`
-
-Written by `model.py` and read by `checker.py` and `results.py`. This is the deliverable the brief asks for: "the shipments on each tour, their order, the tractor, the times, and the cost".
+Written by `approach_a.py`, read by `heuristic.py` and `ltl_reasons.py`. Every candidate has already passed every rule in `rules.md`, uses the cheapest stop order for its shipments and tractor type, and costs less than sending its shipments by LTL.
 
 ```json
 {
   "instance": "simplified",
   "workbook": "data/project1_simplified.xlsx",
-  "solver": {
-    "gurobi_version": "12.0.x",
-    "parameters": {"MIPGap": 0.0, "TimeLimit": 600},
-    "per_day": [
-      {"day": 1, "status": "OPTIMAL", "objective": 0.0, "mip_gap": 0.0,
-       "runtime_s": 0.0, "n_candidates": 0}
-    ],
-    "candidate_set": "complete enumeration up to 3 shipments per tour"
-  },
-  "tours": [
-    {
-      "tour_id": "d1-D01-DRY-6-18-000123",
-      "day": 1,
-      "tractor_id": "T01",
-      "depot_id": "D01",
-      "equipment_id": "DRY",
-      "shipments": ["S001", "S002"],
-      "events": [ "... same structure as in the candidates file ..." ],
-      "departure": 7.0,
-      "return": 16.0,
-      "miles": 350.0,
-      "drive_hours": 7.0,
-      "duty_hours": 9.0,
-      "cost_cad": 1000.0
-    }
+  "enumeration": "complete up to 3 shipments per tour",
+  "relaxation": "none",
+  "ltl_cost": {"S001": 1397.25, "S002": 1345.5},
+  "feasible_shipments": ["S001", "S002"],
+  "dedicated_cost": {"S001": 900.0},
+  "profiles": [
+    {"profile": 0, "depot_id": "D01", "equipment_id": "DRY", "tractor_ids": ["T01", "T02", "T03", "T04"]}
   ],
-  "ltl": [
-    {"shipment_id": "S003", "cost_cad": 0.0}
-  ],
-  "totals": {
-    "tl_cost_cad": 0.0,
-    "ltl_cost_cad": 0.0,
-    "total_cost_cad": 0.0,
-    "all_ltl_baseline_cad": 93298.35
-  }
+  "candidates": [
+    {"tour_id": 92, "day": 1, "profile": 0, "shipments": ["S009", "S014"],
+     "events": ["... same structure as in the plan, below ..."],
+     "departure": 7.0, "return": 17.0, "miles": 382, "drive_hours": 8.0, "duty_hours": 10.0, "cost_cad": 1000.0}
+  ]
 }
 ```
 
-The zeros above are placeholders. The example structure is real.
-
-**Field rules**
-- Every shipment of the workbook appears **exactly once**, either inside one tour's `shipments` or in `ltl`. This is how the plan expresses M1.
-- `tractor_id` is a real tractor ID. A tractor appears in at most one tour per day (M2).
-- `depot_id` and `equipment_id` are copied for readability. **The checker must look them up from `tractor_id` in the workbook, and treat a mismatch as an error.**
-- `totals.total_cost_cad` = sum of tour `cost_cad` + sum of LTL `cost_cad`, and it must equal the Gurobi objective (within CAD 0.01).
+| Field | Meaning |
+|---|---|
+| `ltl_cost` | LTL cost of every shipment (rules R5.1) |
+| `feasible_shipments` | shipments that appear in at least one feasible tour, at any cost (used by `ltl_reasons.py`) |
+| `dedicated_cost` | cheapest feasible tour carrying the shipment alone, at any cost |
+| `profiles` | tractor types: tractors with the same depot, equipment and shift are interchangeable (rules R7.3) |
+| `candidates[].profile` | which tractor type drives the tour; the tractor ID is chosen when the plan is built |
 
 ---
 
-## 3. Checker report: `outputs/check_<instance>.json`
+## 2. Plan: `outputs/plan_<instance>.json` (Gurobi) and `outputs/plan_heuristic_<instance>.json`
 
-Written by `checker.py`. The checker **recomputes everything from the workbook**: loads, times, miles, driving, duty, costs and LTL rates. It never trusts the numbers written in the plan; it only compares against them.
+Written by `approach_a.py` and by `heuristic.py` in the same format, read by `checker.py` and `results.py`. This is the deliverable the project instructions ask for: the shipments on each tour, their order, the tractor, the times and the cost.
+
+```json
+{
+  "instance": "simplified",
+  "workbook": "data/project1_simplified.xlsx",
+  "summary": {"status": "OPTIMAL", "total_cost": 36246.15, "all_ltl_baseline": 93298.35, "savings_pct": 61.15,
+              "...": "more results, see below"},
+  "solver_per_day": [
+    {"day": 1, "status": "OPTIMAL", "objective": 11921.4, "mip_gap": 0.0, "runtime_s": 0.01,
+     "variables": 556, "constraints": 28, "candidate_tours": 134}
+  ],
+  "tours": [
+    {
+      "tour_id": 92, "day": 1, "tractor_id": "T01", "depot_id": "D01", "equipment_id": "DRY",
+      "shipments": ["S009", "S014"],
+      "events": [
+        {"seq": 1, "type": "P", "shipment_id": "S014", "location_id": "F01",
+         "arrival": 8.0, "service_start": 8.0, "service_end": 8.5, "break_after": false},
+        {"seq": 2, "type": "P", "shipment_id": "S009", "location_id": "F11",
+         "arrival": 9.25, "service_start": 9.25, "service_end": 9.75, "break_after": false}
+      ],
+      "departure": 7.0, "return": 17.0, "miles": 382, "drive_hours": 8.0, "duty_hours": 10.0, "cost_cad": 1000.0
+    }
+  ],
+  "ltl": [
+    {"shipment_id": "S007", "cost_cad": 2375.9}
+  ]
+}
+```
+
+**Field rules**
+- Every shipment of the workbook appears **exactly once**: inside one tour's `shipments`, or in `ltl` (constraint M1).
+- `tractor_id` is a real tractor ID, used at most once per day (constraint M2).
+- `events` are in driving order, `seq` from 1. `break_after: true` (main file only) means a 0.5 h break starts at that event's `service_end`.
+- `depot_id` and `equipment_id` are copied for readability. **The checker looks them up from `tractor_id` in the workbook and treats a mismatch as an error.**
+- `summary.total_cost` = sum of tour `cost_cad` + sum of LTL `cost_cad`.
+- `summary` (Gurobi plan) also holds: `relaxation`, `gurobi_version`, `status`, `objective`, `max_mip_gap`, `runtime_s` (Gurobi solve time), `total_runtime_s` (whole run), `candidate_tours`, `complete_enumeration`, `all_triples`, `tl_cost`, `ltl_cost`, `savings`, `n_tours`, `tours_by_size`, the shipment counts (`n_shipments_ltl`, `n_shipments_dedicated`, `n_shipments_consolidated`), utilization, `total_tour_miles` and extra time. The heuristic plan has `method` instead of the Gurobi fields and no `solver_per_day`.
+
+---
+
+## 3. Checker report: `outputs/check_<plan name>.json`
+
+Written by `checker.py`, next to the plan it checked (`plan_simplified.json` → `check_simplified.json`, `plan_heuristic_main.json` → `check_heuristic_main.json`). The checker **recomputes everything from the workbook**: loads, times, miles, driving, duty, costs and LTL rates. It never trusts the numbers written in the plan; it only compares against them.
 
 ```json
 {
@@ -150,10 +116,9 @@ Written by `checker.py`. The checker **recomputes everything from the workbook**
   "verdict": "ACCEPT",
   "n_violations": 0,
   "violations": [
-    {"code": "CAPACITY_WEIGHT", "rule": "R3.1", "tour_id": "...", "seq": 2,
-     "detail": "load 46000 lb > capacity 45000 lb after event 2"}
+    {"code": "CAPACITY_PALLETS", "rule": "R3.1", "tour_id": 172, "seq": 3, "detail": "28 pallets > 26"}
   ],
-  "recomputed": {"total_cost_cad": 0.0, "matches_plan": true}
+  "recomputed": {"tl_cost": 24400.0, "ltl_cost": 11846.15, "total_cost": 36246.15, "n_tours": 24, "n_ltl": 8}
 }
 ```
 
@@ -181,28 +146,28 @@ Written by `checker.py`. The checker **recomputes everything from the workbook**
 
 ---
 
-## 4. Checker evidence files (brief, deliverable 3)
+## 4. Checker evidence files (project instructions, deliverable 3)
 
-Stored in `outputs/tests/`. Each is a copy of the valid simplified plan with **one** change, made by hand or by a short script:
+Written by `test_checker.py` to `outputs/tests/`, each with its checker report:
 
-| File | Change from the valid plan | Expected verdict |
+| File | Change from the valid plan | Result |
 |---|---|---|
 | `plan_valid.json` | none | `ACCEPT` |
-| `plan_overload.json` | add a heavy shipment to a tour, moving it out of `ltl` and inserting its events, so the weight exceeds capacity | `REJECT` with `CAPACITY_*` |
-| `plan_missed_window.json` | shift one tour's times later, so a service ends after its window | `REJECT` with `WINDOW` |
-| `plan_double_booked.json` | give two tours of the same day the same `tractor_id` | `REJECT` with `TRACTOR_DOUBLE_BOOKED` |
+| `plan_overload.json` | an LTL shipment added to a tour at facilities the tour already visits, schedule and cost recomputed | REJECT: a CAPACITY_* code (which one depends on the plan), possibly with WINDOW on the added shipment’s pickup.|
+| `plan_missed_window.json` | one tour's last delivery starts 15 minutes after its latest possible start | `REJECT`: `WINDOW` only |
+| `plan_double_booked.json` | two tours of the same day and depot given the same `tractor_id` | `REJECT`: `TRACTOR_DOUBLE_BOOKED` only |
 
-Keep the checker's output for each one. These four reports are the evidence the brief asks for.
+These four reports are the evidence the project instructions ask for.
 
 ---
 
 ## Notes
 
-- **Large files.** On the main file, `candidates_main.json` may be tens of MB. Add `outputs/candidates_*.json` to `.gitignore`: it can be regenerated in a few minutes. **Do commit** the plans, the checker reports and `outputs/tests/`, because they are deliverables.
-- **Fake data for testing.** Until the real modules exist, Person 1 can test against a hand-written `plan_valid.json`, and Person 2 can test the model with 3 or 4 hand-written candidates in this format.
+- **Large files.** `candidates_*.json` (about 4 MB on the main file) and `outputs/whatif/` can be recreated in about a minute: keep them out of Git (`.gitignore`). **Do commit** the plans, the checker reports, `outputs/tests/`, the result tables and the figures, because they are deliverables.
 
 ## Change log
 
 | Date | Version | Change | Agreed by |
 |---|---|---|---|
 | 2026-10-27 | 0.1 | First draft | (to approve) |
+| 2026-11-09 | 0.2 | Matched to the code: candidate file fields, plan `summary` and `solver_per_day`, heuristic plan, checker report fields, what-if folder, final checker evidence | |

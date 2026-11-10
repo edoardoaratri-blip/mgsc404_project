@@ -2,7 +2,7 @@
 
 **Status:** DRAFT v0.1, to be approved by the whole group. After approval, change it only by agreement and note each change in the change log at the bottom.
 
-**Purpose.** This is the single source of truth for every rule. The evaluator (`src/evaluator.py`) and the independent checker (`src/checker.py`) both implement this sheet, **separately and without sharing code**. If they disagree on a plan, either one of them has a bug or this sheet is ambiguous. Fix the sheet first, then the code.
+**Purpose.** This is the single source of truth for every rule. The evaluator (`src/approach_a.py`(step 4, evaluator)) and the independent checker (`src/checker.py`) both implement this sheet, **separately and without sharing code**. If they disagree on a plan, either one of them has a bug or this sheet is ambiguous. Fix the sheet first, then the code.
 
 **Sources:** the project brief (`Project_1-Consolidation.pdf`), the data README (`Readme_project1.pdf`) and the workbooks. Every rule cites its source. Where the sources are silent, the rule is marked **[ASSUMPTION]** and listed in section 9 to confirm with the instructor.
 

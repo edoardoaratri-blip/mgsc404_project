@@ -1,0 +1,19 @@
+Metric,All-LTL,Savings heuristic,Gurobi (Approach A)
+Total cost (CAD),93298.34999999999,36349.65,36246.15
+Savings vs all-LTL (CAD),0.0,56948.69999999999,57052.19999999999
+Savings vs all-LTL (%),0.0,61.039343139508894,61.15027757725618
+Tours,0,24,24
+Shipments on LTL,60,8,8
+Shipments on a dedicated tour,0,0,0
+Shipments on a tour with 2+ shipments,0,52,52
+"Weight utilization, peak per tour (avg %)",,66.25,69.25925925925927
+"Floor-length utilization, peak per tour (avg %)",,76.33647798742139,75.0
+"Weight utilization, mile-weighted (%)",,25.886650618691668,27.879765846570827
+"Floor-length utilization, mile-weighted (%)",,30.753306607956894,30.070057816084592
+Total tour miles (incl. depot legs),0.0,7893.0,7953.0
+  of which empty miles,,3335.0,3251.0
+"Extra time vs direct trip, average (h)",,1.8557692307692308,2.0096153846153846
+"Extra time vs direct trip, maximum (h)",,6.25,6.5
+Checker verdict,,ACCEPT,ACCEPT
+Gurobi solve time (s),,,0.13
+Total run time (s),,0.001,3.99

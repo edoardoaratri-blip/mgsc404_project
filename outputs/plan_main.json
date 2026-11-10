@@ -3,13 +3,16 @@
   "workbook": "data/project1_main.xlsx",
   "summary": {
     "instance": "main",
+    "relaxation": "none",
     "gurobi_version": "13.0.3",
     "status": "OPTIMAL",
     "objective": 1140762.95,
     "max_mip_gap": 9.571849461114532e-16,
-    "runtime_s": 0.31,
+    "runtime_s": 0.21,
+    "total_runtime_s": 14.9,
     "candidate_tours": 4726,
     "complete_enumeration": false,
+    "all_triples": false,
     "partner_k": null,
     "all_ltl_baseline": 1557535.85,
     "tl_cost": 178327.95,
@@ -18,6 +21,12 @@
     "savings": 416772.9,
     "savings_pct": 26.76,
     "n_tours": 168,
+    "tours_by_size": {
+      "1": 39,
+      "2": 118,
+      "3": 11,
+      "4": 0
+    },
     "n_shipments_ltl": 492,
     "n_shipments_dedicated": 39,
     "n_shipments_consolidated": 269,
@@ -35,7 +44,7 @@
       "status": "OPTIMAL",
       "objective": 167963.75,
       "mip_gap": 8.663723707268297e-16,
-      "runtime_s": 0.14,
+      "runtime_s": 0.05,
       "variables": 879,
       "constraints": 124,
       "candidate_tours": 764
@@ -55,7 +64,7 @@
       "status": "OPTIMAL",
       "objective": 152028.25,
       "mip_gap": 9.571849461114532e-16,
-      "runtime_s": 0.04,
+      "runtime_s": 0.05,
       "variables": 783,
       "constraints": 123,
       "candidate_tours": 669
@@ -95,7 +104,7 @@
       "status": "OPTIMAL",
       "objective": 168225.45,
       "mip_gap": 6.920196785143678e-16,
-      "runtime_s": 0.05,
+      "runtime_s": 0.03,
       "variables": 737,
       "constraints": 123,
       "candidate_tours": 623

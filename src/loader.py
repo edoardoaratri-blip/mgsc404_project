@@ -1,6 +1,5 @@
 # loader.py - reads the workbook and prepares every table the other scripts need.
-# Run from the repository folder:  python src/loader.py            (simplified file)
-#                                   python src/loader.py main       (main file)
+
 # Other scripts reuse everything with:  from loader import *
 # (they inherit the same choice: python src/approach_a.py main)
 
@@ -10,7 +9,7 @@ import pandas as pd
 INSTANCE = sys.argv[1] if len(sys.argv) > 1 else "simplified"     # "simplified" or "main"
 path = f"data/project1_{INSTANCE}.xlsx"
 
-# ---------- read the sheets ----------
+# read the sheets
 shipments_df = pd.read_excel(path, "shipments")
 facilities_df = pd.read_excel(path, "facilities")
 depots_df = pd.read_excel(path, "depots")
@@ -22,19 +21,19 @@ tractors_df = pd.read_excel(path, "tractors")
 rules_df = pd.read_excel(path, "driver_rules")
 params_df = pd.read_excel(path, "parameters")
 
-# ---------- shipments: one dictionary per shipment ----------
+# shipments
 shipments = {}
 for row in shipments_df.to_dict("records"):
     shipments[row["shipment_id"]] = row
 
-# ---------- opening hours of every location (facilities and depots together) ----------
+# opening hours of every location 
 hours = {}
 for row in facilities_df.itertuples():
     hours[row.facility_id] = (row.open_hour, row.close_hour)
 for row in depots_df.itertuples():
     hours[row.depot_id] = (row.open_hour, row.close_hour)
 
-# ---------- miles and drive hours between locations ----------
+# miles and drive hours between locations
 miles = {}
 drive = {}
 for row in dist_df.itertuples():
@@ -45,7 +44,7 @@ for loc in hours:
     miles[(loc, loc)] = 0
     drive[(loc, loc)] = 0
 
-# ---------- tractors, equipment, truckload costs ----------
+# tractors, equipment, truckload costs
 tractors = {}
 for row in tractors_df.to_dict("records"):
     tractors[row["tractor_id"]] = row
@@ -58,11 +57,11 @@ tl_cost = {}
 for row in tl_df.to_dict("records"):
     tl_cost[row["equipment_id"]] = row
 
-# ---------- rules and parameters: rule["max_drive_hours"], param["max_stops"] ----------
+# rules and parameters
 rule = dict(zip(rules_df.parameter, rules_df.value))
 param = dict(zip(params_df.parameter, params_df.value))
 
-# ---------- LTL cost of each shipment = base cost * (1 + fuel surcharge) ----------
+# LTL cost of each shipment = base cost * (1 + fuel surcharge)
 ltl_cost = {}
 for s in shipments.values():
     d = miles[(s["origin_id"], s["destination_id"])]
@@ -74,7 +73,7 @@ for s in shipments.values():
     r = match.iloc[0]
     ltl_cost[s["shipment_id"]] = r.base_cost_cad * (1 + r.fuel_surcharge_pct)
 
-# ---------- basic data checks (README section 6) ----------
+# basic data checks
 for s in shipments.values():
     if s["origin_id"] not in hours or s["destination_id"] not in hours:
         raise ValueError(f"{s['shipment_id']}: unknown facility")
@@ -84,7 +83,20 @@ for t in tractors.values():
     if t["home_depot_id"] not in hours or t["equipment_id"] not in equipment or t["equipment_id"] not in tl_cost:
         raise ValueError(f"{t['tractor_id']}: unknown depot or equipment")
 
-# ---------- summary (printed only when this file is run directly) ----------
+# extra data checks (rules R0.5)
+if shipments_df["shipment_id"].duplicated().any():
+    raise ValueError("duplicate shipment_id")
+for s in shipments.values():
+    for col in ("weight_lb", "linear_feet", "pallets"):
+        if not s[col] > 0:
+            raise ValueError(f"{s['shipment_id']}: {col} must be positive")
+for a in hours:
+    for b in facilities_df.facility_id:
+        if a != b and ((a, b) not in drive or (b, a) not in drive):
+            raise ValueError(f"missing distance {a} <-> {b}")
+
+        
+# summary
 if __name__ == "__main__":
     print("instance:", INSTANCE)
     print("shipments:", len(shipments), "| tractors:", len(tractors), "| locations:", len(hours))

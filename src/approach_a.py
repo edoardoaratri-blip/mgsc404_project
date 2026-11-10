@@ -1,8 +1,4 @@
-# approach_a.py - Approach A: build every feasible tour in Python, then let Gurobi select.
-#
-# Run from the repository folder:
-#     python src/approach_a.py            (simplified file)
-#     python src/approach_a.py main       (main file)
+# Approach A: build every feasible tour in Python, then let Gurobi select.
 #
 # Steps (same structure as the team's notebook):
 #   1. read the data                      (src/loader.py)
@@ -12,13 +8,13 @@
 #   5. candidate tour pool Q
 #   6. Gurobi selection model (x = tour selected, y = shipment on LTL)
 #   7. plan export (outputs/plan_<instance>.json) + summary + route printout
-#
-# Every rule follows docs/rules.md. Times are handled in integer quarter-hours ("ticks").
+
 
 import itertools
 import json
 import os
 import time
+import sys
 
 import gurobipy as gp
 from gurobipy import GRB
@@ -26,9 +22,27 @@ from gurobipy import GRB
 from loader import *          # INSTANCE, shipments, hours, miles, drive, tractors, equipment,
                               # tl_cost, rule, param, ltl_cost
 
+T_START = time.time()         # to report how long the whole run takes (tours + Gurobi + export)
 MAIN = INSTANCE == "main"
 TIME_LIMIT = 600              # seconds per Gurobi solve
 MIP_GAP = 0.0
+
+
+# What-if experiments (step 2 of the analysis): switch ONE rule off to measure what it costs.
+#   none       all rules (the real plan)
+#   no_lifo    deliveries in any order (side access instead of strict last-in first-out)
+#   no_compat  freight of different temperatures / groups may share the trailer
+#   no_reefer  chilled freight may ride on DRY trucks
+#   no_hours   every facility open 0-24 (shipment windows still apply)
+#   no_break   no 30-minute driver break
+# A relaxed plan breaks a real rule, so it is NOT a valid plan: it is written to outputs/whatif/
+# and only its cost is used, to show how much that rule limits consolidation.
+RELAX = sys.argv[2] if len(sys.argv) > 2 else "none"
+RELAXATIONS = ["none", "no_lifo", "no_compat", "no_reefer", "no_hours", "no_break"]
+# check to avoid typos
+if RELAX not in RELAXATIONS:
+    raise SystemExit(f"unknown setting {RELAX}; choose one of {RELAXATIONS}")
+
 
 # Candidate-pool settings.
 # Simplified file: every set of up to 3 shipments is tried, so the pool is complete
@@ -39,6 +53,10 @@ MIP_GAP = 0.0
 # tested at 15 it changes nothing, so it is off.
 COMPLETE_ENUMERATION = not MAIN
 PARTNER_K = None
+# ALL_TRIPLES = True tries EVERY set of 3 shipments on the main file too (about 30 minutes in total)
+# instead of only sets built from feasible pairs. We use it only to show in the report that triples are
+# complete on the main file. Sets of 4 still use the restricted rule.
+ALL_TRIPLES = False
 
 # One binary per (tour, tractor) mirrors the handwritten formulation (T_kd).
 # On the main file identical tractors are grouped instead (same optimum, fewer variables).
@@ -58,7 +76,9 @@ BREAK_AFTER = tk(rule["break_after_drive_hours"])
 BREAK_LEN = tk(rule["break_hours"])
 MAX_STOPS = int(param["max_stops"])
 MAX_N = MAX_STOPS // 2                      # most shipments on one tour
-LIFO = int(param["lifo_required"]) == 1
+LIFO = int(param["lifo_required"]) == 1 and RELAX != "no_lifo"
+if RELAX == "no_break":
+    BREAK_AFTER = MAX_DRIVE                 # a tour never drives more than this, so no break is needed
 
 I = sorted(shipments)
 D = sorted({shipments[i]["day"] for i in I})
@@ -132,9 +152,9 @@ def evaluate(sub, order, pi):
     for kind, i in seq:
         s = shipments[i]
         if kind == "P":
-            if s["temperature"] == "chilled" and not pr["chilled"]:
+            if s["temperature"] == "chilled" and not pr["chilled"] and RELAX != "no_reefer":
                 return None
-            for j in board:
+            for j in (board if RELAX != "no_compat" else []):
                 o = shipments[j]
                 if o["temperature"] != s["temperature"] or o["compatibility_group"] != s["compatibility_group"]:
                     return None
@@ -169,9 +189,10 @@ def evaluate(sub, order, pi):
         else:
             w_open, w_close, sv = s["delivery_open_hour"], s["delivery_close_hour"], s["delivery_service_hours"]
         svc.append(tk(sv))
-        lo.append(tk(max(w_open, hours[f][0])))
-        hi.append(tk(min(w_close, hours[f][1])) - tk(sv))   # latest START so that service ENDS in time
-
+        f_open, f_close = (0, 24) if RELAX == "no_hours" else hours[f]
+        lo.append(tk(max(w_open, f_open)))
+        hi.append(tk(min(w_close, f_close)) - tk(sv))       # latest START so that service ENDS in time
+        
     # break options: none, or 0.5 h after the service of event b (main file only)
     if total_drive <= BREAK_AFTER:
         break_options = [None]
@@ -237,7 +258,7 @@ def evaluate(sub, order, pi):
 
 
 # README test case: T01 does S001 + S002 for CAD 1,000 (simplified file only)
-if not MAIN:
+if not MAIN and RELAX == "none":
     test = evaluate(("S001", "S002"), (("P", 0), ("P", 1), ("D", 1), ("D", 0)),
                     PROF_LIST.index(("D01", "DRY", 6, 18)))
     assert test and test["miles"] == 350 and test["cost"] == 1000 and test["drive_hours"] == 7 \
@@ -252,6 +273,7 @@ if not MAIN:
 # ---------------------------------------------------------------------------
 Q = []
 feasible_sets = set()               # sets with at least one feasible tour (any profile, any cost)
+dedicated_cost = {}                 # shipment -> cheapest feasible tour carrying it alone (any cost)
 
 
 def build_tours(sub):
@@ -272,6 +294,8 @@ def build_tours(sub):
                 Q.append(best)
     if any_feasible:
         feasible_sets.add(sub)
+    if len(sub) == 1 and best_cost is not None:
+        dedicated_cost[sub[0]] = best_cost
     return best_cost
 
 
@@ -291,7 +315,7 @@ for d in D:
         top = {i: set(sorted(pair_saving[i], key=pair_saving[i].get, reverse=True)[:PARTNER_K]) for i in day_ships}
         partners = {i: {j for j in pair_saving[i] if j in top[i] or i in top[j]} for i in day_ships}
     for n in range(3, MAX_N + 1):                            # sizes 3 .. MAX_N
-        if COMPLETE_ENUMERATION:
+        if COMPLETE_ENUMERATION or (ALL_TRIPLES and n == 3):
             sets_n = itertools.combinations(day_ships, n)
         else:
             prev = sorted(s for s in feasible_sets if len(s) == n - 1 and shipments[s[0]]["day"] == d)
@@ -317,6 +341,30 @@ T_i = {i: [] for i in I}
 for t in Q:
     for i in t["sub"]:
         T_i[i].append(t["id"])
+
+# Save the candidate pool so other scripts use exactly the same tours.
+TAG = "" if RELAX == "none" else f"_{RELAX}"
+OUT_DIR = "outputs" if RELAX == "none" else "outputs/whatif"
+os.makedirs(OUT_DIR, exist_ok=True)
+candidates_file = f"{OUT_DIR}/candidates_{INSTANCE}{TAG}.json"
+with open(candidates_file, "w") as f:
+    json.dump(dict(
+        instance=INSTANCE, workbook=path,
+        enumeration=("complete up to %d shipments per tour" % MAX_N) if COMPLETE_ENUMERATION
+                        else ("singles, pairs and triples complete; sets of 4 built from feasible triples"
+                            if ALL_TRIPLES else
+                            "singles and pairs complete; larger sets built from feasible smaller sets"),
+        relaxation=RELAX,
+        ltl_cost={i: round(ltl_cost[i], 2) for i in I},
+        feasible_shipments=sorted({i for s in feasible_sets for i in s}),
+        dedicated_cost={i: round(c, 2) for i, c in sorted(dedicated_cost.items())},
+        profiles=[dict(profile=pi, depot_id=p["depot"], equipment_id=p["eq"],
+                       tractor_ids=PROFILE[PROF_LIST[pi]]) for pi, p in enumerate(PROF)],
+        candidates=[dict(tour_id=t["id"], day=t["day"], profile=t["prof"], shipments=list(t["sub"]),
+                         events=t["events"], departure=t["departure"], **{"return": t["ret"]},
+                         miles=t["miles"], drive_hours=t["drive_hours"], duty_hours=t["duty_hours"],
+                         cost_cad=round(t["cost"], 2)) for t in Q]), f, indent=1)
+print(f"Candidate tours saved to {candidates_file}")
 
 # ---------------------------------------------------------------------------
 # Step 6: Gurobi selection model
@@ -441,14 +489,16 @@ for t in plan_tours:
         extra.append(end[("D", i)] - end[("P", i)] - direct)
 
 summary = dict(
-    instance=INSTANCE, gurobi_version=".".join(map(str, gp.gurobi.version())),
+    instance=INSTANCE, relaxation=RELAX, gurobi_version=".".join(map(str, gp.gurobi.version())),
     status="OPTIMAL" if all_optimal else "NOT ALL OPTIMAL", objective=round(objective, 2),
     max_mip_gap=max(p["mip_gap"] for p in per_day), runtime_s=round(sum(p["runtime_s"] for p in per_day), 2),
-    candidate_tours=len(Q), complete_enumeration=COMPLETE_ENUMERATION, partner_k=PARTNER_K,
+    total_runtime_s=round(time.time() - T_START, 2),
+    candidate_tours=len(Q), complete_enumeration=COMPLETE_ENUMERATION, all_triples=ALL_TRIPLES, partner_k=PARTNER_K,
     all_ltl_baseline=round(BASELINE, 2), tl_cost=round(tl_total, 2), ltl_cost=round(ltl_total, 2),
     total_cost=round(total, 2), savings=round(BASELINE - total, 2),
     savings_pct=round(100 * (BASELINE - total) / BASELINE, 2),
     n_tours=len(plan_tours),
+    tours_by_size={n: sum(1 for t in plan_tours if len(t["shipments"]) == n) for n in range(1, MAX_N + 1)},
     n_shipments_ltl=len(ltl_ships),
     n_shipments_dedicated=sum(1 for t in plan_tours if len(t["shipments"]) == 1),
     n_shipments_consolidated=sum(len(t["shipments"]) for t in plan_tours if len(t["shipments"]) > 1),
@@ -462,7 +512,7 @@ summary = dict(
 
 plan = dict(instance=INSTANCE, workbook=path, summary=summary, solver_per_day=per_day, tours=plan_tours,
             ltl=[dict(shipment_id=i, cost_cad=round(ltl_cost[i], 2)) for i in ltl_ships])
-out_file = f"outputs/plan_{INSTANCE}.json"
+out_file = f"{OUT_DIR}/plan_{INSTANCE}{TAG}.json"
 with open(out_file, "w") as f:
     json.dump(plan, f, indent=2)
 

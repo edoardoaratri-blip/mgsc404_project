@@ -7,7 +7,11 @@ Add `main` at the end of a command for the main file.
 | 1 | `python src/loader.py` | Reads the workbook, computes LTL costs, checks the data | all-LTL baseline CAD 93,298.35 |
 | 2 | `python src/approach_a.py` | Builds every feasible tour, Gurobi selects, writes `outputs/plan_simplified.json` | total CAD 36,246.15, savings 61.2% |
 | 3 | `python src/checker.py outputs/plan_simplified.json` | Independent check of the plan, writes `outputs/check_simplified.json` | ACCEPT, 0 violations |
-| 4 | `python src/test_checker.py` | Builds three broken plans in `outputs/tests/` and shows the checker rejects them | All checker tests passed |
+| 4 | `python src/test_checker.py` | Builds three broken plans and one valid plan in `outputs/tests/` and shows the checker rejects them | All checker tests passed |
+| 5 | `python src/heuristic.py` | Savings heuristic, compared with Gurobi | Gurobi 36,246.15 vs heuristic 36,349.65 |
+| 6 | `python src/ltl_reasons.py` | Why each shipment stays on LTL (A/B/C) | table in outputs/ltl_reasons_simplified.md |
+| 7 | `python src/results.py` | Results tables and charts | PNG files in outputs/ |
+| 8 | `python src/rule_effects.py` | Effect of each rule, main file only (slow) | LIFO first, CAD 24,764.65 |
 
 Main file: `python src/approach_a.py main`, then `python src/checker.py outputs/plan_main.json`
 (expected: CAD 1,140,762.95, savings 26.8%, ACCEPT).
@@ -20,3 +24,7 @@ Requirements: `pip install pandas openpyxl gurobipy` and a Gurobi academic licen
 | `approach_a.py` | Stop orders, evaluator (all rules of `docs/rules.md`), candidate tours, one Gurobi model per day, plan export, results summary, route printout |
 | `checker.py` | Independent checker: reads only the plan and the workbook, recomputes everything |
 | `test_checker.py` | Evidence for the checker: valid, overload, missed window, double-booked tractor |
+| `heuristic.py` | Greedy savings heuristic on the same candidate tours |
+| `ltl_reasons.py` | Classifies every LTL shipment by reason |
+| `results.py` | Results tables and charts |
+| `rule_effects.py` | Re-solves the main file with one rule switched off at a time |

@@ -1,7 +1,4 @@
-# test_checker.py - evidence that the checker works (brief, deliverable 3).
-#
-# Run from the repository folder, after approach_a.py has written outputs/plan_simplified.json:
-#     python src/test_checker.py
+# test_checker.py - used as evidence that the checker works
 #
 # Writes four plans to outputs/tests/ and runs the checker on each:
 #   plan_valid.json            the real plan                        -> must be ACCEPTED
@@ -28,41 +25,99 @@ dmat = pd.read_excel(wb, "distance_matrix")
 drive = {(r.from_id, r.to_id): r.drive_hours for r in dmat.itertuples()}
 trac = pd.read_excel(wb, "tractors").set_index("tractor_id")
 
-# 1. overload: squeeze a same-day LTL shipment onto a tour at the moment its load is highest
+# 1. overload: put an LTL shipment onto a tour whose route ALREADY passes its pickup and delivery
+#    facilities, so no extra driving is needed; the schedule and cost are recomputed exactly.
+#    We keep the case with the fewest violations OTHER than capacity (ideally none). In the simplified
+#    plan the tours are so tight that the extra hour of loading always makes one later stop late, so
+#    the cleanest case shows the capacity errors plus one window error.
 eq = pd.read_excel(wb, "equipment").iloc[0]
 cap = (eq.weight_capacity_lb, eq.length_capacity_feet, eq.pallet_capacity)
-over = copy.deepcopy(valid)
-done = False
-for t in over["tours"]:
-    load, peak, peak_at = [0, 0, 0], None, 0
-    for n, e in enumerate(t["events"]):
+tl = pd.read_excel(wb, "tl_costs").iloc[0]
+ 
+ 
+def leg(a, b):
+    return 0.0 if a == b else drive[(a, b)]
+ 
+ 
+def window(sid, kind, loc):
+    s = ship.loc[sid]
+    w = (s.pickup_open_hour, s.pickup_close_hour) if kind == "P" else (s.delivery_open_hour, s.delivery_close_hour)
+    svc = s.pickup_service_hours if kind == "P" else s.delivery_service_hours
+    return float(max(w[0], fac.loc[loc].open_hour)), float(svc)        # plain numbers, so JSON can save them
+ 
+ 
+def reschedule(t):
+    """Recompute arrival / service times, return, duty and cost along the new stop order."""
+    clock, here = t["departure"], t["depot_id"]
+    for n, e in enumerate(t["events"], 1):
+        clock += float(leg(here, e["location_id"]))
+        earliest, svc = window(e["shipment_id"], e["type"], e["location_id"])
+        e.update(seq=n, arrival=clock, service_start=max(clock, earliest), service_end=max(clock, earliest) + svc)
+        clock, here = e["service_end"], e["location_id"]
+    t["return"] = clock + float(leg(here, t["depot_id"]))
+    t["duty_hours"] = t["return"] - t["departure"]
+    t["cost_cad"] = round(float(max(tl.minimum_linehaul_cad, t["miles"] * tl.linehaul_cad_per_mile)
+                                + tl.extra_stop_cad * max(0, len(t["events"]) - 2)), 2)
+ 
+ 
+def overloaded(t):
+    load = [0, 0, 0]
+    for e in t["events"]:
         s = ship.loc[e["shipment_id"]]
         g = 1 if e["type"] == "P" else -1
         load = [load[0] + g * s.weight_lb, load[1] + g * s.linear_feet, load[2] + g * s.pallets]
-        if peak is None or max(load[k] / cap[k] for k in range(3)) > max(peak[k] / cap[k] for k in range(3)):
-            peak, peak_at = list(load), n
-    for l in over["ltl"]:
+        if any(load[k] > cap[k] for k in range(3)):
+            return True
+    return False
+ 
+ 
+over, over_extra = None, None
+for k, t0 in enumerate(valid["tours"]):
+    for l in valid["ltl"]:
         sid = l["shipment_id"]
         s = ship.loc[sid]
-        extra = (s.weight_lb, s.linear_feet, s.pallets)
-        if s.day == t["day"] and any(peak[k] + extra[k] > cap[k] for k in range(3)):
-            e0 = t["events"][peak_at]
-            t["events"].insert(peak_at + 1, dict(seq=0, type="P", shipment_id=sid, location_id=s.origin_id,
-                                                 arrival=e0["service_end"], service_start=e0["service_end"],
-                                                 service_end=e0["service_end"] + 0.5, break_after=False))
-            t["events"].append(dict(seq=0, type="D", shipment_id=sid, location_id=s.destination_id,
-                                    arrival=t["return"], service_start=t["return"], service_end=t["return"] + 0.5,
-                                    break_after=False))
-            for n, e in enumerate(t["events"], 1):
-                e["seq"] = n
-            t["shipments"].append(sid)
-            over["ltl"] = [x for x in over["ltl"] if x["shipment_id"] != sid]
-            done = True
+        locs = [e["location_id"] for e in t0["events"]]
+        if s.day != t0["day"]:
+            continue
+        for a in [n for n, loc in enumerate(locs) if loc == s.origin_id]:
+            for b in [n for n, loc in enumerate(locs) if loc == s.destination_id and n >= a]:
+                trial = copy.deepcopy(valid)
+                t = trial["tours"][k]
+                base = dict(break_after=False, arrival=0, service_start=0, service_end=0, seq=0)
+                t["events"].insert(b + 1, dict(base, type="D", shipment_id=sid, location_id=s.destination_id))
+                t["events"].insert(a + 1, dict(base, type="P", shipment_id=sid, location_id=s.origin_id))
+                t["shipments"].append(sid)
+                trial["ltl"] = [x for x in trial["ltl"] if x["shipment_id"] != sid]
+                if not overloaded(t):
+                    continue
+                # the extra hour of loading can push later stops late: try leaving earlier, within the shift
+                shift_start = float(trac.loc[t["tractor_id"]].shift_start_hour)
+                departures = [t0["departure"] - 0.25 * q for q in range(int((t0["departure"] - shift_start) / 0.25) + 1)]
+                for dep in departures:
+                    t["departure"] = dep
+                    reschedule(t)
+                    trial["summary"]["total_cost"] = round(sum(x["cost_cad"] for x in trial["tours"])
+                                                           + sum(x["cost_cad"] for x in trial["ltl"]), 2)
+                    path = f"{OUT}/plan_overload.json"
+                    json.dump(trial, open(path, "w"), indent=2)
+                    subprocess.run([sys.executable, "src/checker.py", path], capture_output=True, text=True)
+                    found = json.load(open(f"{OUT}/check_overload.json"))["violations"]
+                    extra = sum(1 for v in found if not v["code"].startswith("CAPACITY_"))
+                    if any(v["code"].startswith("CAPACITY_") for v in found) and (over is None or extra < over_extra):
+                        over, over_extra = copy.deepcopy(trial), extra
+                    if over_extra == 0:
+                        break
+                if over_extra == 0:
+                    break
+            if over_extra == 0:
+                break
+        if over_extra == 0:
             break
-    if done:
+    if over_extra == 0:
         break
-if not done:
+if over is None:
     raise SystemExit("could not build an overload case from this plan")
+ 
 
 # 2. missed window: the last delivery of a tour starts 15 min after its latest possible start
 late = copy.deepcopy(valid)

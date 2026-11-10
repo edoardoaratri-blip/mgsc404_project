@@ -3,21 +3,29 @@
   "workbook": "data/project1_simplified.xlsx",
   "summary": {
     "instance": "simplified",
+    "relaxation": "none",
     "gurobi_version": "13.0.3",
     "status": "OPTIMAL",
     "objective": 36246.15,
     "max_mip_gap": 0.0,
-    "runtime_s": 0.23,
+    "runtime_s": 0.13,
+    "total_runtime_s": 3.99,
     "candidate_tours": 398,
     "complete_enumeration": true,
+    "all_triples": false,
     "partner_k": null,
     "all_ltl_baseline": 93298.35,
     "tl_cost": 24400,
     "ltl_cost": 11846.15,
-    "total_cost": 36246.15,
+    "total_cost": 35000.65,
     "savings": 57052.2,
     "savings_pct": 61.15,
     "n_tours": 24,
+    "tours_by_size": {
+      "1": 0,
+      "2": 20,
+      "3": 4
+    },
     "n_shipments_ltl": 8,
     "n_shipments_dedicated": 0,
     "n_shipments_consolidated": 52,
@@ -35,7 +43,7 @@
       "status": "OPTIMAL",
       "objective": 11921.4,
       "mip_gap": 0.0,
-      "runtime_s": 0.07,
+      "runtime_s": 0.05,
       "variables": 556,
       "constraints": 28,
       "candidate_tours": 134
@@ -45,7 +53,7 @@
       "status": "OPTIMAL",
       "objective": 12136.5,
       "mip_gap": 0.0,
-      "runtime_s": 0.08,
+      "runtime_s": 0.04,
       "variables": 580,
       "constraints": 28,
       "candidate_tours": 140
@@ -55,7 +63,7 @@
       "status": "OPTIMAL",
       "objective": 12188.25,
       "mip_gap": 0.0,
-      "runtime_s": 0.08,
+      "runtime_s": 0.04,
       "variables": 516,
       "constraints": 28,
       "candidate_tours": 124
@@ -70,8 +78,7 @@
       "equipment_id": "DRY",
       "shipments": [
         "S003",
-        "S017",
-        "S007"
+        "S017"
       ],
       "events": [
         {
@@ -96,16 +103,6 @@
         },
         {
           "seq": 3,
-          "type": "P",
-          "shipment_id": "S007",
-          "location_id": "F12",
-          "arrival": 11.5,
-          "service_start": 11.5,
-          "service_end": 12.0,
-          "break_after": false
-        },
-        {
-          "seq": 4,
           "type": "D",
           "shipment_id": "S003",
           "location_id": "F05",
@@ -115,23 +112,13 @@
           "break_after": false
         },
         {
-          "seq": 5,
+          "seq": 4,
           "type": "D",
           "shipment_id": "S017",
           "location_id": "F08",
           "arrival": 14.0,
           "service_start": 14.0,
           "service_end": 14.5,
-          "break_after": false
-        },
-        {
-          "seq": 6,
-          "type": "D",
-          "shipment_id": "S007",
-          "location_id": "F03",
-          "arrival": 15.5,
-          "service_start": 15.5,
-          "service_end": 16.0,
           "break_after": false
         }
       ],
@@ -546,7 +533,8 @@
       "equipment_id": "DRY",
       "shipments": [
         "S002",
-        "S013"
+        "S013",
+        "S008"
       ],
       "events": [
         {
@@ -570,32 +558,52 @@
           "break_after": false
         },
         {
+          "break_after": false,
+          "arrival": 10.5,
+          "service_start": 10.5,
+          "service_end": 11.0,
           "seq": 3,
-          "type": "D",
-          "shipment_id": "S002",
-          "location_id": "F04",
-          "arrival": 12.5,
-          "service_start": 12.5,
-          "service_end": 13.0,
-          "break_after": false
+          "type": "P",
+          "shipment_id": "S008",
+          "location_id": "F02"
         },
         {
           "seq": 4,
           "type": "D",
+          "shipment_id": "S002",
+          "location_id": "F04",
+          "arrival": 13.0,
+          "service_start": 13.0,
+          "service_end": 13.5,
+          "break_after": false
+        },
+        {
+          "seq": 5,
+          "type": "D",
           "shipment_id": "S013",
           "location_id": "F07",
-          "arrival": 14.0,
-          "service_start": 14.0,
-          "service_end": 14.5,
+          "arrival": 14.5,
+          "service_start": 14.5,
+          "service_end": 15.0,
           "break_after": false
+        },
+        {
+          "break_after": false,
+          "arrival": 15.0,
+          "service_start": 15.0,
+          "service_end": 15.5,
+          "seq": 6,
+          "type": "D",
+          "shipment_id": "S008",
+          "location_id": "F07"
         }
       ],
       "departure": 6.0,
-      "return": 15.25,
+      "return": 16.25,
       "miles": 349,
       "drive_hours": 7.25,
-      "duty_hours": 9.25,
-      "cost_cad": 1000
+      "duty_hours": 10.25,
+      "cost_cad": 1100.0
     },
     {
       "tour_id": 165,
@@ -1586,8 +1594,8 @@
   ],
   "ltl": [
     {
-      "shipment_id": "S008",
-      "cost_cad": 1345.5
+      "shipment_id": "S007",
+      "cost_cad": 2375.9
     },
     {
       "shipment_id": "S022",
