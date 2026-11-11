@@ -22,11 +22,9 @@ from gurobipy import GRB
 from loader import *          # INSTANCE, shipments, hours, miles, drive, tractors, equipment,
                               # tl_cost, rule, param, ltl_cost
 
+# general settings
 T_START = time.time()         # to report how long the whole run takes (tours + Gurobi + export)
 MAIN = INSTANCE == "main"
-TIME_LIMIT = 600              # seconds per Gurobi solve
-MIP_GAP = 0.0
-
 TIME_LIMIT = 600              # seconds per Gurobi solve
 MIP_GAP = 0.0
 SEED = 1                      # fixed Gurobi seed: same plan on every computer
@@ -53,9 +51,8 @@ if RELAX not in RELAXATIONS:
 # Main file: every single and every pair is tried; sets of 3 and 4 are only built from sets
 # whose smaller subsets are all feasible. State this in the report: the main result is
 # optimal over this pool. PARTNER_K (optional) keeps only each shipment's K best partners;
-# tested at 15 it changes nothing, so it is off.
 COMPLETE_ENUMERATION = not MAIN
-PARTNER_K = None
+PARTNER_K = None  # tested at 15 it changes nothing, so it is off.
 # ALL_TRIPLES = True tries EVERY set of 3 shipments on the main file too (about 30 minutes in total)
 # instead of only sets built from feasible pairs. We use it only to show in the report that triples are
 # complete on the main file. Sets of 4 still use the restricted rule.
@@ -65,13 +62,12 @@ ALL_TRIPLES = False
 # On the main file identical tractors are grouped instead (same optimum, fewer variables).
 TRACTOR_INDEXED = not MAIN
 
+# create the "outputs" folder
 os.makedirs("outputs", exist_ok=True)
 
-
+# We convert full hours into integer quarters, to avoid rounding mistakes (even if with 0.25 multiples mistakes shouldn't happen) 
 def tk(hours_value):
-    """hours -> integer quarter-hour ticks (every time in the data is on the 0.25 h grid)"""
     return int(round(hours_value * 4))
-
 
 MAX_DRIVE = tk(rule["max_drive_hours"])
 MAX_DUTY = tk(rule["max_duty_hours"])
@@ -83,22 +79,23 @@ LIFO = int(param["lifo_required"]) == 1 and RELAX != "no_lifo"
 if RELAX == "no_break":
     BREAK_AFTER = MAX_DRIVE                 # a tour never drives more than this, so no break is needed
 
-I = sorted(shipments)
+# base sets
+I = sorted(shipments)  # sorted dictionary keys
 D = sorted({shipments[i]["day"] for i in I})
-BASELINE = sum(ltl_cost.values())
+BASELINE = sum(ltl_cost.values())  # cost if everything worked on LTL
 print(f"Instance: {INSTANCE} | shipments: {len(I)} | days: {D} | all-LTL baseline: CAD {BASELINE:,.2f}")
 
-# ---------------------------------------------------------------------------
-# Tractor profiles: tractors with the same depot, equipment and shift are identical.
-# ---------------------------------------------------------------------------
-PROFILE = {}                                 # (depot, equipment, shift start, shift end) -> [tractor ids]
+
+# Tractor groupement into profiles: tractors with the same depot, equipment and shift are identical.
+PROFILE = {}                                 
 for k in sorted(tractors):
     t = tractors[k]
     key = (t["home_depot_id"], t["equipment_id"], t["shift_start_hour"], t["shift_end_hour"])
     PROFILE.setdefault(key, []).append(k)
 PROF_LIST = list(PROFILE)
 
-PROF = []                                    # everything the evaluator needs, per profile
+# profile infos needed by the exaluator
+PROF = []                                    
 for depot, eq, s_start, s_end in PROF_LIST:
     e = equipment[eq]
     c = tl_cost[eq]
@@ -114,33 +111,30 @@ print(f"Tractors: {len(tractors)} in {len(PROF_LIST)} profiles | max stops {MAX_
       f"drive <= {rule['max_drive_hours']} h | duty <= {rule['max_duty_hours']} h | "
       f"break {rule['break_hours']} h after {rule['break_after_drive_hours']} h of driving")
 
-# ---------------------------------------------------------------------------
+
 # Step 3: stop orders. Built once per number of shipments n, on positions 0..n-1.
 # Each event is (kind, position): pickup before delivery; strict LIFO when LIFO = True.
-# ---------------------------------------------------------------------------
 ORDERS = {}
 for n in range(1, MAX_N + 1):
     out = []
 
     def extend(seq, picked, board):
-        if len(seq) == 2 * n:
+        if len(seq) == 2 * n:                   # order is complete
             out.append(tuple(seq))
             return
-        for p in range(n):                                   # next event: a pickup
+        for p in range(n):                                   # for each shipment not yet picked, try to pick it up and continue
             if p not in picked:
                 extend(seq + [("P", p)], picked | {p}, board + [p])
-        options = board[-1:] if LIFO else board              # next event: a delivery
+        options = board[-1:] if LIFO else board              # for each shipment "droppable", try to drop it and continue
         for p in options:
             extend(seq + [("D", p)], picked, [b for b in board if b != p])
 
-    extend([], set(), [])
+    extend([], set(), [])      # recursive function, recals itself to explore each possible shipment configuration
     ORDERS[n] = out
 print("Stop orders per set size:", {n: len(o) for n, o in ORDERS.items()})
 
 
-# ---------------------------------------------------------------------------
 # Step 4: evaluator
-# ---------------------------------------------------------------------------
 def evaluate(sub, order, pi):
     """Is this stop order feasible for tractor profile pi? Returns the tour dict or None."""
     pr = PROF[pi]
@@ -269,11 +263,9 @@ if not MAIN and RELAX == "none":
     print("README test tour: 350 mi, 7 h driving, 9 h duty, departs 07:00, CAD 1,000 -> OK")
 
 
-# ---------------------------------------------------------------------------
 # Step 5: candidate tour pool Q
 # For every set and profile keep only the cheapest feasible order (cost does not depend on timing),
 # and only if it is cheaper than sending the same shipments by LTL.
-# ---------------------------------------------------------------------------
 Q = []
 feasible_sets = set()               # sets with at least one feasible tour (any profile, any cost)
 dedicated_cost = {}                 # shipment -> cheapest feasible tour carrying it alone (any cost)
@@ -369,16 +361,12 @@ with open(candidates_file, "w") as f:
                          cost_cad=round(t["cost"], 2)) for t in Q]), f, indent=1)
 print(f"Candidate tours saved to {candidates_file}")
 
-# ---------------------------------------------------------------------------
+
 # Step 6: Gurobi selection model
-#   x[t,k] = 1 if tractor k runs tour t          (or x[t] with grouped tractors)
-#   y[i]   = 1 if shipment i goes by LTL
-#   min  sum c_t x[t,k] + sum l_i y_i
-#   C1   y_i + sum_{t in T_i} x[t,k] = 1           every shipment served exactly once
-#   C2   sum_{t in T_kd} x[t,k] <= 1               one tour per tractor per day
-#        (grouped: sum over the profile's tours <= number of tractors in the profile)
+#   C1   every shipment served exactly once
+#   C2   one tour per tractor per day (grouped: sum over the profile's tours <= number of tractors in the profile)
 #   C3   binary
-# ---------------------------------------------------------------------------
+
 # Every shipment and every tour belongs to one day, and C2 is written per day,
 # so the model splits into one independent model per day (same optimum, smaller models).
 chosen = []                                                     # (tour, tractor id)
@@ -452,9 +440,8 @@ print(f"Total objective CAD {objective:,.2f} | " + ("all days optimal over the c
       (" (pool is complete, so this is the global optimum)." if COMPLETE_ENUMERATION else " (pool is limited, see settings).")
       if all_optimal else "NOT all days proved optimal (time limit)."))
 
-# ---------------------------------------------------------------------------
+
 # Step 7: plan export, summary, routes
-# ---------------------------------------------------------------------------
 chosen.sort(key=lambda c: (c[0]["day"], c[1]))
 plan_tours = []
 for t, k in chosen:
