@@ -8,9 +8,9 @@
     "status": "OPTIMAL",
     "objective": 1140762.95,
     "max_mip_gap": 9.571849461114532e-16,
-    "runtime_s": 0.3,
+    "runtime_s": 0.16,
     "seed": 1,
-    "total_runtime_s": 19.85,
+    "total_runtime_s": 9.41,
     "candidate_tours": 4726,
     "complete_enumeration": false,
     "all_triples": false,
@@ -46,7 +46,7 @@
       "objective": 167963.75,
       "bound": 167963.75,
       "mip_gap": 8.663723707268297e-16,
-      "runtime_s": 0.13,
+      "runtime_s": 0.09,
       "variables": 879,
       "constraints": 124,
       "candidate_tours": 764
@@ -68,7 +68,7 @@
       "objective": 152028.25,
       "bound": 152028.25,
       "mip_gap": 9.571849461114532e-16,
-      "runtime_s": 0.04,
+      "runtime_s": 0.03,
       "variables": 783,
       "constraints": 123,
       "candidate_tours": 669
@@ -79,7 +79,7 @@
       "objective": 163898.6,
       "bound": 163898.6,
       "mip_gap": 7.102886896345352e-16,
-      "runtime_s": 0.02,
+      "runtime_s": 0.0,
       "variables": 713,
       "constraints": 123,
       "candidate_tours": 599
@@ -90,7 +90,7 @@
       "objective": 166794.75,
       "bound": 166794.75,
       "mip_gap": 8.724444401497562e-16,
-      "runtime_s": 0.02,
+      "runtime_s": 0.0,
       "variables": 684,
       "constraints": 123,
       "candidate_tours": 570
@@ -101,7 +101,7 @@
       "objective": 155691.25,
       "bound": 155691.25,
       "mip_gap": 0.0,
-      "runtime_s": 0.02,
+      "runtime_s": 0.0,
       "variables": 811,
       "constraints": 123,
       "candidate_tours": 697
@@ -112,7 +112,7 @@
       "objective": 168225.45,
       "bound": 168225.45,
       "mip_gap": 6.920196785143678e-16,
-      "runtime_s": 0.05,
+      "runtime_s": 0.02,
       "variables": 737,
       "constraints": 123,
       "candidate_tours": 623

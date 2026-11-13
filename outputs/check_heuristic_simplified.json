@@ -1,13 +1,288 @@
 {
   "plan_file": "outputs/plan_heuristic_simplified.json",
+  "workbook": "data/project1_simplified.xlsx",
+  "instance": "simplified",
   "verdict": "ACCEPT",
   "n_violations": 0,
   "violations": [],
+  "warnings": [],
   "recomputed": {
     "tl_cost": 24400.0,
     "ltl_cost": 11949.65,
     "total_cost": 36349.65,
+    "all_ltl_baseline": 93298.35,
+    "saving_pct": 61.04,
     "n_tours": 24,
     "n_ltl": 8
+  },
+  "tours": [
+    {
+      "tour_id": 125,
+      "tractor_id": "T01",
+      "day": 1,
+      "events": 6,
+      "miles": 273.0,
+      "driving_h": 6.0,
+      "duty_h": 9.0,
+      "cost": 1100,
+      "ltl_alternative": 4527.55
+    },
+    {
+      "tour_id": 32,
+      "tractor_id": "T02",
+      "day": 1,
+      "events": 4,
+      "miles": 340.0,
+      "driving_h": 7.0,
+      "duty_h": 9.0,
+      "cost": 1000,
+      "ltl_alternative": 2933.65
+    },
+    {
+      "tour_id": 121,
+      "tractor_id": "T03",
+      "day": 1,
+      "events": 4,
+      "miles": 303.0,
+      "driving_h": 6.5,
+      "duty_h": 8.5,
+      "cost": 1000,
+      "ltl_alternative": 2761.15
+    },
+    {
+      "tour_id": 51,
+      "tractor_id": "T04",
+      "day": 1,
+      "events": 4,
+      "miles": 341.0,
+      "driving_h": 7.0,
+      "duty_h": 9.0,
+      "cost": 1000,
+      "ltl_alternative": 2691.0
+    },
+    {
+      "tour_id": 128,
+      "tractor_id": "T05",
+      "day": 1,
+      "events": 6,
+      "miles": 361.0,
+      "driving_h": 7.5,
+      "duty_h": 10.75,
+      "cost": 1100,
+      "ltl_alternative": 4279.15
+    },
+    {
+      "tour_id": 108,
+      "tractor_id": "T06",
+      "day": 1,
+      "events": 4,
+      "miles": 317.0,
+      "driving_h": 6.75,
+      "duty_h": 9.25,
+      "cost": 1000,
+      "ltl_alternative": 2933.65
+    },
+    {
+      "tour_id": 110,
+      "tractor_id": "T07",
+      "day": 1,
+      "events": 4,
+      "miles": 204.0,
+      "driving_h": 4.75,
+      "duty_h": 6.75,
+      "cost": 1000,
+      "ltl_alternative": 2794.5
+    },
+    {
+      "tour_id": 82,
+      "tractor_id": "T08",
+      "day": 1,
+      "events": 4,
+      "miles": 340.0,
+      "driving_h": 7.0,
+      "duty_h": 9.0,
+      "cost": 1000,
+      "ltl_alternative": 2727.8
+    },
+    {
+      "tour_id": 271,
+      "tractor_id": "T01",
+      "day": 2,
+      "events": 6,
+      "miles": 345.0,
+      "driving_h": 7.5,
+      "duty_h": 10.5,
+      "cost": 1100,
+      "ltl_alternative": 4805.85
+    },
+    {
+      "tour_id": 216,
+      "tractor_id": "T02",
+      "day": 2,
+      "events": 4,
+      "miles": 317.0,
+      "driving_h": 6.5,
+      "duty_h": 8.75,
+      "cost": 1000,
+      "ltl_alternative": 3269.45
+    },
+    {
+      "tour_id": 251,
+      "tractor_id": "T03",
+      "day": 2,
+      "events": 4,
+      "miles": 377.0,
+      "driving_h": 7.75,
+      "duty_h": 10.75,
+      "cost": 1000,
+      "ltl_alternative": 3072.8
+    },
+    {
+      "tour_id": 200,
+      "tractor_id": "T04",
+      "day": 2,
+      "events": 4,
+      "miles": 340.0,
+      "driving_h": 7.0,
+      "duty_h": 9.0,
+      "cost": 1000,
+      "ltl_alternative": 2794.5
+    },
+    {
+      "tour_id": 252,
+      "tractor_id": "T05",
+      "day": 2,
+      "events": 4,
+      "miles": 364.0,
+      "driving_h": 7.75,
+      "duty_h": 10.75,
+      "cost": 1000,
+      "ltl_alternative": 4678.2
+    },
+    {
+      "tour_id": 230,
+      "tractor_id": "T06",
+      "day": 2,
+      "events": 4,
+      "miles": 254.0,
+      "driving_h": 5.5,
+      "duty_h": 8.0,
+      "cost": 1000,
+      "ltl_alternative": 3130.3
+    },
+    {
+      "tour_id": 223,
+      "tractor_id": "T07",
+      "day": 2,
+      "events": 4,
+      "miles": 373.0,
+      "driving_h": 8.0,
+      "duty_h": 10.0,
+      "cost": 1000,
+      "ltl_alternative": 3096.95
+    },
+    {
+      "tour_id": 262,
+      "tractor_id": "T08",
+      "day": 2,
+      "events": 4,
+      "miles": 362.0,
+      "driving_h": 8.0,
+      "duty_h": 10.25,
+      "cost": 1000,
+      "ltl_alternative": 2709.4
+    },
+    {
+      "tour_id": 397,
+      "tractor_id": "T01",
+      "day": 3,
+      "events": 6,
+      "miles": 374.0,
+      "driving_h": 8.0,
+      "duty_h": 11.0,
+      "cost": 1100,
+      "ltl_alternative": 4527.55
+    },
+    {
+      "tour_id": 386,
+      "tractor_id": "T02",
+      "day": 3,
+      "events": 4,
+      "miles": 375.0,
+      "driving_h": 7.75,
+      "duty_h": 10.5,
+      "cost": 1000,
+      "ltl_alternative": 3269.45
+    },
+    {
+      "tour_id": 355,
+      "tractor_id": "T03",
+      "day": 3,
+      "events": 4,
+      "miles": 243.0,
+      "driving_h": 5.0,
+      "duty_h": 7.0,
+      "cost": 1000,
+      "ltl_alternative": 3130.3
+    },
+    {
+      "tour_id": 348,
+      "tractor_id": "T04",
+      "day": 3,
+      "events": 4,
+      "miles": 320.0,
+      "driving_h": 6.5,
+      "duty_h": 8.5,
+      "cost": 1000,
+      "ltl_alternative": 2709.4
+    },
+    {
+      "tour_id": 388,
+      "tractor_id": "T05",
+      "day": 3,
+      "events": 4,
+      "miles": 351.0,
+      "driving_h": 7.5,
+      "duty_h": 9.5,
+      "cost": 1000,
+      "ltl_alternative": 4481.55
+    },
+    {
+      "tour_id": 337,
+      "tractor_id": "T06",
+      "day": 3,
+      "events": 4,
+      "miles": 367.0,
+      "driving_h": 8.0,
+      "duty_h": 10.0,
+      "cost": 1000,
+      "ltl_alternative": 3854.8
+    },
+    {
+      "tour_id": 312,
+      "tractor_id": "T07",
+      "day": 3,
+      "events": 4,
+      "miles": 290.0,
+      "driving_h": 6.25,
+      "duty_h": 9.25,
+      "cost": 1000,
+      "ltl_alternative": 3269.45
+    },
+    {
+      "tour_id": 315,
+      "tractor_id": "T08",
+      "day": 3,
+      "events": 4,
+      "miles": 362.0,
+      "driving_h": 7.75,
+      "duty_h": 9.75,
+      "cost": 1000,
+      "ltl_alternative": 2900.3
+    }
+  ],
+  "tolerances": {
+    "time_h": 1e-05,
+    "cost_cad": 0.01
   }
 }

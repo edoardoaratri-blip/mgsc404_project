@@ -1,6 +1,6 @@
 # Rules sheet: how we interpret the brief
 
-**Status:** DRAFT v0.1, to be approved by the whole group. After approval, change it only by agreement and note each change in the change log at the bottom.
+**Status:** FINAL v1.0 (2026-11-13). This is the version the code, the plans and the report follow. Change it only by agreement and note each change in the change log at the bottom.
 
 **Purpose.** This is the single source of truth for every rule. The evaluator (`src/approach_a.py`(step 4, evaluator)) and the independent checker (`src/checker.py`) both implement this sheet, **separately and without sharing code**. If they disagree on a plan, either one of them has a bug or this sheet is ambiguous. Fix the sheet first, then the code.
 
@@ -154,7 +154,7 @@ Groups on the main file: ambient-general 652, ambient-food 32, ambient-industria
 - **Rule.** G must never exceed `break_after_drive_hours` = 8 h. A leg cannot be split by a break. This is safe because every single lane is ≤ 8 h: the longest is 4.5 h on the simplified file and 6.75 h on the main file.
 - **Effect.** A break resets G only. It counts toward duty (R4.3) and delays every later event by 0.5 h. It does **not** reset total driving (R4.2).
 - **Handling.** Handling time never counts as a break.
-- **[ASSUMPTION] Waiting is not a break.** We never count waiting as a break, which is conservative: the README allows it only "if explicitly recorded". Open question Q2.
+- **Waiting is not a break (our choice, confirmed as acceptable).** We never count waiting as a break, which is conservative: the README allows it only "if explicitly recorded". The instructor said either reading is acceptable if it is stated clearly (Q2). We tested the alternative with the what-if `wait_break`: counting a wait of 30+ minutes as the break would save CAD 2,806.70 (0.25%) on the main file, changing 5 of 168 tours, and nothing on the simplified file.
 - **Where to place it.** Since total driving ≤ 11 h < 16 h, a tour needs **at most one** break. The generator tries "no break" and "break after event j" for every j, and keeps the feasible option with the shortest duty.
 - **Simplified file.** No break is ever needed: the 8 h drive cap equals the threshold (brief, table on page 2).
 
@@ -198,7 +198,7 @@ Both are computed for weight and for floor length. Open question Q3.
 ## 9. Open questions for the instructor
 
 - **Q1.** Is a set-partitioning formulation acceptable as the full MILP, if F1 to F13 are written out mathematically but enforced during candidate generation?
-- **Q2.** May waiting of 0.5 h or more count as the driver break?
+- **Q2.** May waiting of 0.5 h or more count as the driver break? **Answered:** either reading is acceptable if stated clearly. We keep "waiting is not a break" (R6.4) and report the alternative as a what-if.
 - **Q3.** Which definition of weight and floor-length utilization do you expect?
 - **Q4.** May we group identical tractors (R7.3) in the model, as long as the plan reports individual tractor IDs?
 
@@ -209,3 +209,4 @@ Both are computed for weight and for floor length. Open question Q3.
 | Date | Version | Change | Agreed by |
 |---|---|---|---|
 | 2026-10-27 | 0.1 | First draft | (to approve) |
+| 2026-11-13 | 1.0 | Final. R6.4 and Q2: the instructor allowed either treatment of waiting; we keep waiting is not a break and report the alternative (what-if `wait_break`) | group |

@@ -20,5 +20,5 @@ Gurobi status: OPTIMAL, gap 0.0000%, Gurobi 13.0.3, 4,726 candidate tours (optim
 | Extra time vs direct trip, average (h) |  | 0.39 | 0.42 |
 | Extra time vs direct trip, maximum (h) |  | 5.00 | 4.00 |
 | Checker verdict |  | ACCEPT | ACCEPT |
-| Gurobi solve time (s) |  |  | 0.22 |
-| Total run time (s) |  | 0.03 | 17.40 |
+| Gurobi solve time (s) |  |  | 0.14 |
+| Total run time (s) |  | 0.01 | 9.80 |

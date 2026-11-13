@@ -36,10 +36,12 @@ SEED = 1                      # fixed Gurobi seed: same plan on every computer
 #   no_reefer  chilled freight may ride on DRY trucks
 #   no_hours   every facility open 0-24 (shipment windows still apply)
 #   no_break   no 30-minute driver break
+#   wait_break a wait of 30+ minutes before a service counts as the driver break (the alternative
+#              reading the instructor allowed; we keep the stricter rule in the real plan)
 # A relaxed plan breaks a real rule, so it is NOT a valid plan: it is written to outputs/whatif/
 # and only its cost is used, to show how much that rule limits consolidation.
 RELAX = sys.argv[2] if len(sys.argv) > 2 else "none"
-RELAXATIONS = ["none", "no_lifo", "no_compat", "no_reefer", "no_hours", "no_break"]
+RELAXATIONS = ["none", "no_lifo", "no_compat", "no_reefer", "no_hours", "no_break", "wait_break"]
 # check to avoid typos
 if RELAX not in RELAXATIONS:
     raise SystemExit(f"unknown setting {RELAX}; choose one of {RELAXATIONS}")
@@ -190,6 +192,56 @@ def evaluate(sub, order, pi):
         lo.append(tk(max(w_open, f_open)))
         hi.append(tk(min(w_close, f_close)) - tk(sv))       # latest START so that service ENDS in time
         
+    # What-if "wait_break" only: the break can ALSO be a wait of 30+ minutes before the service of
+    # event b. Waits depend on the departure time, so every departure tick is tried (exact search).
+    # The real plan never runs this block.
+    if RELAX == "wait_break" and total_drive > BREAK_AFTER:
+        splits = [b for b in range(n_ev) if sum(legs[:b + 1]) <= BREAK_AFTER and sum(legs[b + 1:]) <= BREAK_AFTER]
+        options = [("after", b) for b in splits] + [("wait", b) for b in splits]
+        # total waiting when leaving at the earliest time: leaving later than this cannot shorten duty
+        t = pr["earliest"]
+        total_wait = 0
+        for j in range(n_ev):
+            t += legs[j]
+            total_wait += max(0, lo[j] - t)
+            t = max(t, lo[j]) + svc[j]
+        best = None
+        for depart in range(pr["earliest"], pr["earliest"] + total_wait + 1):
+            for where, b in options:
+                t = depart
+                ok = True
+                for j in range(n_ev):
+                    t += legs[j]
+                    start = max(t, lo[j])
+                    if start > hi[j] or (where == "wait" and j == b and start - t < BREAK_LEN):
+                        ok = False
+                        break
+                    t = start + svc[j] + (BREAK_LEN if (where == "after" and j == b) else 0)
+                if not ok:
+                    continue
+                ret = t + legs[-1]
+                if ret > pr["latest"] or ret - depart > MAX_DUTY:
+                    continue
+                key = (ret - depart, 0 if where == "after" else 1, depart)   # shortest duty first
+                if best is None or key < best[0]:
+                    best = (key, depart, where, b)
+        if best is None:
+            return None
+        _, depart, where, b = best
+        events = []
+        t = depart
+        for j, (kind, i) in enumerate(seq):
+            t += legs[j]
+            start = max(t, lo[j])
+            events.append(dict(seq=j + 1, type=kind, shipment_id=i, location_id=locs[j + 1],
+                               arrival=t / 4, service_start=start / 4, service_end=(start + svc[j]) / 4,
+                               break_after=(where == "after" and j == b), break_before=(where == "wait" and j == b)))
+            t = start + svc[j] + (BREAK_LEN if (where == "after" and j == b) else 0)
+        ret = t + legs[-1]
+        cost = max(pr["minimum"], total_miles * pr["rate"]) + pr["stop_fee"] * max(0, n_ev - 2)
+        return dict(sub=sub, prof=pi, cost=cost, events=events, departure=depart / 4, ret=ret / 4,
+                    miles=total_miles, drive_hours=total_drive / 4, duty_hours=(ret - depart) / 4)
+
     # break options: none, or 0.5 h after the service of event b (main file only)
     if total_drive <= BREAK_AFTER:
         break_options = [None]

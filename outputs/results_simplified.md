@@ -11,14 +11,14 @@ Gurobi status: OPTIMAL, gap 0.0000%, Gurobi 13.0.3, 398 candidate tours (complet
 | Shipments on LTL | 60 | 8 | 8 |
 | Shipments on a dedicated tour | 0 | 0 | 0 |
 | Shipments on a tour with 2+ shipments | 0 | 52 | 52 |
-| Weight utilization, peak per tour (avg %) |  | 66.25 | 69.26 |
-| Floor-length utilization, peak per tour (avg %) |  | 76.34 | 75.00 |
-| Weight utilization, mile-weighted (%) |  | 25.89 | 27.88 |
-| Floor-length utilization, mile-weighted (%) |  | 30.75 | 30.07 |
-| Total tour miles (incl. depot legs) | 0.00 | 7,893.00 | 7,953.00 |
-|   of which empty miles |  | 3,335.00 | 3,251.00 |
-| Extra time vs direct trip, average (h) |  | 1.86 | 2.01 |
+| Weight utilization, peak per tour (avg %) |  | 66.25 | 69.17 |
+| Floor-length utilization, peak per tour (avg %) |  | 76.34 | 74.84 |
+| Weight utilization, mile-weighted (%) |  | 25.89 | 27.61 |
+| Floor-length utilization, mile-weighted (%) |  | 30.75 | 30.13 |
+| Total tour miles (incl. depot legs) | 0.00 | 7,893.00 | 7,891.00 |
+|   of which empty miles |  | 3,335.00 | 3,186.00 |
+| Extra time vs direct trip, average (h) |  | 1.86 | 1.98 |
 | Extra time vs direct trip, maximum (h) |  | 6.25 | 6.50 |
 | Checker verdict |  | ACCEPT | ACCEPT |
-| Gurobi solve time (s) |  |  | 0.13 |
-| Total run time (s) |  | 0.00 | 3.99 |
+| Gurobi solve time (s) |  |  | 0.12 |
+| Total run time (s) |  | 0.00 | 3.64 |

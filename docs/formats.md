@@ -99,7 +99,7 @@ Written by `approach_a.py` and by `heuristic.py` in the same format, read by `ch
 **Field rules**
 - Every shipment of the workbook appears **exactly once**: inside one tour's `shipments`, or in `ltl` (constraint M1).
 - `tractor_id` is a real tractor ID, used at most once per day (constraint M2).
-- `events` are in driving order, `seq` from 1. `break_after: true` (main file only) means a 0.5 h break starts at that event's `service_end`.
+- `events` are in driving order, `seq` from 1. `break_after: true` (main file only) means a 0.5 h break starts at that event's `service_end`. What-if plans made with `wait_break` may also carry `break_before: true`: a wait of at least 0.5 h before that service counted as the break. Real plans never contain it, and the checker does not accept it.
 - `depot_id` and `equipment_id` are copied for readability. **The checker looks them up from `tractor_id` in the workbook and treats a mismatch as an error.**
 - `summary.total_cost` = sum of tour `cost_cad` + sum of LTL `cost_cad`.
 - `summary` (Gurobi plan) also holds: `relaxation`, `gurobi_version`, `status`, `objective`, `max_mip_gap`, `runtime_s` (Gurobi solve time), `total_runtime_s` (whole run), `candidate_tours`, `complete_enumeration`, `all_triples`, `tl_cost`, `ltl_cost`, `savings`, `n_tours`, `tours_by_size`, the shipment counts (`n_shipments_ltl`, `n_shipments_dedicated`, `n_shipments_consolidated`), utilization, `total_tour_miles` and extra time. The heuristic plan has `method` instead of the Gurobi fields and no `solver_per_day`.
@@ -108,27 +108,42 @@ Written by `approach_a.py` and by `heuristic.py` in the same format, read by `ch
 
 ## 3. Checker report: `outputs/check_<plan name>.json`
 
-Written by `checker.py`, next to the plan it checked (`plan_simplified.json` → `check_simplified.json`, `plan_heuristic_main.json` → `check_heuristic_main.json`). The checker **recomputes everything from the workbook**: loads, times, miles, driving, duty, costs and LTL rates. It never trusts the numbers written in the plan; it only compares against them.
+Written by `checker.py`, next to the plan it checked (`plan_simplified.json` → `check_simplified.json`, `plan_heuristic_main.json` → `check_heuristic_main.json`). The checker **recomputes everything from the workbook**: locations, loads, times, miles, driving, duty, costs and LTL rates. It never trusts the numbers written in the plan; it only compares against them. It also checks that the workbook is the course workbook (a fingerprint of its 10 data sheets), and it rejects a malformed plan with a reason instead of crashing.
 
 ```json
 {
   "plan_file": "outputs/plan_simplified.json",
+  "workbook": "data/project1_simplified.xlsx",
+  "instance": "simplified",
   "verdict": "ACCEPT",
   "n_violations": 0,
   "violations": [
     {"code": "CAPACITY_PALLETS", "rule": "R3.1", "tour_id": 172, "seq": 3, "detail": "28 pallets > 26"}
   ],
-  "recomputed": {"tl_cost": 24400.0, "ltl_cost": 11846.15, "total_cost": 36246.15, "n_tours": 24, "n_ltl": 8}
+  "warnings": [
+    {"code": "TOUR_DEARER_THAN_LTL", "tour_id": 12, "detail": "costs 1100.00 but its shipments cost 1050.00 by LTL"}
+  ],
+  "recomputed": {"tl_cost": 24400.0, "ltl_cost": 11846.15, "total_cost": 36246.15, "all_ltl_baseline": 93298.35,
+                 "saving_pct": 61.15, "n_tours": 24, "n_ltl": 8},
+  "tours": [{"tour_id": 92, "tractor_id": "T01", "day": 1, "events": 4, "miles": 382.0, "driving_h": 8.0,
+             "duty_h": 10.0, "cost": 1000.0, "ltl_alternative": 2742.75}],
+  "tolerances": {"time_h": 1e-05, "cost_cad": 0.01}
 }
 ```
 
-`verdict` is `ACCEPT` only if `violations` is empty.
+`verdict` is `ACCEPT` only if `violations` is empty. `warnings` never change the verdict (`NO_TOTAL`: the plan states no total; `ABOVE_ALL_LTL`: the plan costs more than all-LTL; `TOUR_DEARER_THAN_LTL`: a tour costs more than sending its shipments by LTL). `instance` is `simplified`, `main`, or `null` for a workbook that is not the course workbook.
 
 **Violation codes**
 
 | Code | Rule | Meaning |
 |---|---|---|
+| `WORKBOOK_UNRECOGNISED` | R0 | The workbook is not one of the two course workbooks (override with `--allow-other-workbook`) |
+| `MALFORMED` | R0 | A missing field, a repeated `tour_id`, or a value of the wrong type |
+| `SHIPMENT_UNKNOWN` | R1.1 | The plan names a shipment that is not in the workbook |
 | `SHIPMENT_MISSING` / `SHIPMENT_DUPLICATE` | R1.1 | A shipment is not served, or is served twice |
+| `EMPTY_TOUR` | R4.5 | A tour with no events |
+| `LIST_MISMATCH` | R1.2 | The tour's `shipments` list does not match its events |
+| `LOCATION` | R1.2 | An event's `location_id` is not the shipment's origin (pickup) or destination (delivery) |
 | `PRECEDENCE` | R1.2 | A delivery comes before its pickup, or an event is missing |
 | `WRONG_DAY` | R1.3 | A shipment is on a tour of another day |
 | `STOP_LIMIT` | R4.5 | Too many events |
@@ -171,3 +186,4 @@ These four reports are the evidence the project instructions ask for.
 |---|---|---|---|
 | 2026-10-27 | 0.1 | First draft | (to approve) |
 | 2026-11-09 | 0.2 | Matched to the code: candidate file fields, plan `summary` and `solver_per_day`, heuristic plan, checker report fields, what-if folder, final checker evidence | |
+| 2026-11-13 | 1.0 | Final: new checker (report fields `workbook`, `instance`, `warnings`, `tours`, `tolerances`; codes `WORKBOOK_UNRECOGNISED`, `MALFORMED`, `SHIPMENT_UNKNOWN`, `EMPTY_TOUR`, `LIST_MISMATCH`, `LOCATION`); `bound` per day and `seed` in the plan; `break_before` in what-if plans only; `fleet_value_<instance>.md` | |

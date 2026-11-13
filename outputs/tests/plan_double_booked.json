@@ -8,8 +8,9 @@
     "status": "OPTIMAL",
     "objective": 36246.15,
     "max_mip_gap": 0.0,
-    "runtime_s": 0.13,
-    "total_runtime_s": 3.99,
+    "runtime_s": 0.12,
+    "seed": 1,
+    "total_runtime_s": 3.64,
     "candidate_tours": 398,
     "complete_enumeration": true,
     "all_triples": false,
@@ -29,12 +30,12 @@
     "n_shipments_ltl": 8,
     "n_shipments_dedicated": 0,
     "n_shipments_consolidated": 52,
-    "avg_peak_weight_util": 0.6926,
-    "avg_peak_floor_util": 0.75,
-    "mile_weighted_weight_util": 0.2788,
-    "mile_weighted_floor_util": 0.3007,
-    "total_tour_miles": 7953,
-    "avg_extra_hours_vs_direct": 2.01,
+    "avg_peak_weight_util": 0.6917,
+    "avg_peak_floor_util": 0.7484,
+    "mile_weighted_weight_util": 0.2761,
+    "mile_weighted_floor_util": 0.3013,
+    "total_tour_miles": 7891,
+    "avg_extra_hours_vs_direct": 1.976,
     "max_extra_hours_vs_direct": 6.5
   },
   "solver_per_day": [
@@ -42,8 +43,9 @@
       "day": 1,
       "status": "OPTIMAL",
       "objective": 11921.4,
+      "bound": 11921.4,
       "mip_gap": 0.0,
-      "runtime_s": 0.05,
+      "runtime_s": 0.03,
       "variables": 556,
       "constraints": 28,
       "candidate_tours": 134
@@ -52,6 +54,7 @@
       "day": 2,
       "status": "OPTIMAL",
       "objective": 12136.5,
+      "bound": 12136.5,
       "mip_gap": 0.0,
       "runtime_s": 0.04,
       "variables": 580,
@@ -62,73 +65,15 @@
       "day": 3,
       "status": "OPTIMAL",
       "objective": 12188.25,
+      "bound": 12188.25,
       "mip_gap": 0.0,
-      "runtime_s": 0.04,
+      "runtime_s": 0.05,
       "variables": 516,
       "constraints": 28,
       "candidate_tours": 124
     }
   ],
   "tours": [
-    {
-      "tour_id": 58,
-      "day": 1,
-      "tractor_id": "T01",
-      "depot_id": "D01",
-      "equipment_id": "DRY",
-      "shipments": [
-        "S003",
-        "S017"
-      ],
-      "events": [
-        {
-          "seq": 1,
-          "type": "P",
-          "shipment_id": "S003",
-          "location_id": "F08",
-          "arrival": 9.0,
-          "service_start": 9.0,
-          "service_end": 9.5,
-          "break_after": false
-        },
-        {
-          "seq": 2,
-          "type": "P",
-          "shipment_id": "S017",
-          "location_id": "F05",
-          "arrival": 11.0,
-          "service_start": 11.0,
-          "service_end": 11.5,
-          "break_after": false
-        },
-        {
-          "seq": 3,
-          "type": "D",
-          "shipment_id": "S003",
-          "location_id": "F05",
-          "arrival": 11.5,
-          "service_start": 12.0,
-          "service_end": 12.5,
-          "break_after": false
-        },
-        {
-          "seq": 4,
-          "type": "D",
-          "shipment_id": "S017",
-          "location_id": "F08",
-          "arrival": 14.0,
-          "service_start": 14.0,
-          "service_end": 14.5,
-          "break_after": false
-        }
-      ],
-      "departure": 8.0,
-      "return": 15.5,
-      "miles": 228,
-      "drive_hours": 5.0,
-      "duty_hours": 7.5,
-      "cost_cad": 1000
-    },
     {
       "tour_id": 98,
       "day": 1,
@@ -186,6 +131,65 @@
       "miles": 376,
       "drive_hours": 7.75,
       "duty_hours": 9.75,
+      "cost_cad": 1000
+    },
+    {
+      "tour_id": 36,
+      "day": 1,
+      "tractor_id": "T01",
+      "depot_id": "D01",
+      "equipment_id": "DRY",
+      "shipments": [
+        "S001",
+        "S018"
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "type": "P",
+          "shipment_id": "S001",
+          "location_id": "F01",
+          "arrival": 8.5,
+          "service_start": 8.5,
+          "service_end": 9.0,
+          "break_after": false
+        },
+        {
+          "seq": 2,
+          "type": "P",
+          "shipment_id": "S018",
+          "location_id": "F02",
+          "arrival": 10.0,
+          "service_start": 10.0,
+          "service_end": 10.5,
+          "break_after": false
+        },
+        {
+          "seq": 3,
+          "type": "D",
+          "shipment_id": "S001",
+          "location_id": "F03",
+          "arrival": 12.0,
+          "service_start": 12.0,
+          "service_end": 12.5,
+          "break_after": false
+        },
+        {
+          "seq": 4,
+          "type": "D",
+          "shipment_id": "S018",
+          "location_id": "F08",
+          "arrival": 14.0,
+          "service_start": 14.0,
+          "service_end": 14.5,
+          "break_after": false
+        }
+      ],
+      "departure": 7.5,
+      "return": 15.5,
+      "miles": 288,
+      "drive_hours": 6.0,
+      "duty_hours": 8.0,
       "cost_cad": 1000
     },
     {
@@ -248,169 +252,31 @@
       "cost_cad": 1000
     },
     {
-      "tour_id": 123,
+      "tour_id": 126,
       "day": 1,
       "tractor_id": "T04",
       "depot_id": "D01",
       "equipment_id": "DRY",
       "shipments": [
-        "S001",
+        "S003",
         "S011",
-        "S018"
+        "S017"
       ],
       "events": [
         {
           "seq": 1,
           "type": "P",
-          "shipment_id": "S001",
-          "location_id": "F01",
-          "arrival": 8.25,
-          "service_start": 8.25,
-          "service_end": 8.75,
-          "break_after": false
-        },
-        {
-          "seq": 2,
-          "type": "P",
-          "shipment_id": "S011",
-          "location_id": "F05",
-          "arrival": 10.5,
-          "service_start": 10.5,
-          "service_end": 11.0,
-          "break_after": false
-        },
-        {
-          "seq": 3,
-          "type": "D",
-          "shipment_id": "S011",
-          "location_id": "F02",
-          "arrival": 12.0,
-          "service_start": 12.0,
-          "service_end": 12.5,
-          "break_after": false
-        },
-        {
-          "seq": 4,
-          "type": "P",
-          "shipment_id": "S018",
-          "location_id": "F02",
-          "arrival": 12.5,
-          "service_start": 12.5,
-          "service_end": 13.0,
-          "break_after": false
-        },
-        {
-          "seq": 5,
-          "type": "D",
-          "shipment_id": "S001",
-          "location_id": "F03",
-          "arrival": 14.5,
-          "service_start": 14.5,
-          "service_end": 15.0,
-          "break_after": false
-        },
-        {
-          "seq": 6,
-          "type": "D",
-          "shipment_id": "S018",
+          "shipment_id": "S003",
           "location_id": "F08",
-          "arrival": 16.5,
-          "service_start": 16.5,
-          "service_end": 17.0,
-          "break_after": false
-        }
-      ],
-      "departure": 7.25,
-      "return": 18.0,
-      "miles": 365,
-      "drive_hours": 7.75,
-      "duty_hours": 10.75,
-      "cost_cad": 1100
-    },
-    {
-      "tour_id": 86,
-      "day": 1,
-      "tractor_id": "T05",
-      "depot_id": "D02",
-      "equipment_id": "DRY",
-      "shipments": [
-        "S006",
-        "S015"
-      ],
-      "events": [
-        {
-          "seq": 1,
-          "type": "P",
-          "shipment_id": "S015",
-          "location_id": "F10",
-          "arrival": 9.75,
-          "service_start": 9.75,
-          "service_end": 10.25,
+          "arrival": 9.0,
+          "service_start": 9.0,
+          "service_end": 9.5,
           "break_after": false
         },
         {
           "seq": 2,
           "type": "P",
-          "shipment_id": "S006",
-          "location_id": "F07",
-          "arrival": 11.5,
-          "service_start": 11.5,
-          "service_end": 12.0,
-          "break_after": false
-        },
-        {
-          "seq": 3,
-          "type": "D",
-          "shipment_id": "S015",
-          "location_id": "F07",
-          "arrival": 12.0,
-          "service_start": 13.0,
-          "service_end": 13.5,
-          "break_after": false
-        },
-        {
-          "seq": 4,
-          "type": "D",
-          "shipment_id": "S006",
-          "location_id": "F10",
-          "arrival": 14.75,
-          "service_start": 14.75,
-          "service_end": 15.25,
-          "break_after": false
-        }
-      ],
-      "departure": 9.0,
-      "return": 16.0,
-      "miles": 172,
-      "drive_hours": 4.0,
-      "duty_hours": 7.0,
-      "cost_cad": 1000
-    },
-    {
-      "tour_id": 108,
-      "day": 1,
-      "tractor_id": "T06",
-      "depot_id": "D02",
-      "equipment_id": "DRY",
-      "shipments": [
-        "S012",
-        "S016"
-      ],
-      "events": [
-        {
-          "seq": 1,
-          "type": "P",
-          "shipment_id": "S012",
-          "location_id": "F12",
-          "arrival": 8.75,
-          "service_start": 8.75,
-          "service_end": 9.25,
-          "break_after": false
-        },
-        {
-          "seq": 2,
-          "type": "P",
-          "shipment_id": "S016",
+          "shipment_id": "S017",
           "location_id": "F05",
           "arrival": 11.0,
           "service_start": 11.0,
@@ -420,7 +286,7 @@
         {
           "seq": 3,
           "type": "D",
-          "shipment_id": "S012",
+          "shipment_id": "S003",
           "location_id": "F05",
           "arrival": 11.5,
           "service_start": 12.0,
@@ -429,26 +295,46 @@
         },
         {
           "seq": 4,
+          "type": "P",
+          "shipment_id": "S011",
+          "location_id": "F05",
+          "arrival": 12.5,
+          "service_start": 12.5,
+          "service_end": 13.0,
+          "break_after": false
+        },
+        {
+          "seq": 5,
           "type": "D",
-          "shipment_id": "S016",
-          "location_id": "F07",
+          "shipment_id": "S011",
+          "location_id": "F02",
+          "arrival": 14.0,
+          "service_start": 14.0,
+          "service_end": 14.5,
+          "break_after": false
+        },
+        {
+          "seq": 6,
+          "type": "D",
+          "shipment_id": "S017",
+          "location_id": "F08",
           "arrival": 15.0,
           "service_start": 15.0,
           "service_end": 15.5,
           "break_after": false
         }
       ],
-      "departure": 7.0,
-      "return": 16.25,
-      "miles": 317,
-      "drive_hours": 6.75,
-      "duty_hours": 9.25,
-      "cost_cad": 1000
+      "departure": 8.0,
+      "return": 16.5,
+      "miles": 228,
+      "drive_hours": 5.0,
+      "duty_hours": 8.5,
+      "cost_cad": 1100
     },
     {
       "tour_id": 128,
       "day": 1,
-      "tractor_id": "T07",
+      "tractor_id": "T05",
       "depot_id": "D02",
       "equipment_id": "DRY",
       "shipments": [
@@ -526,13 +412,72 @@
       "cost_cad": 1100
     },
     {
-      "tour_id": 47,
+      "tour_id": 107,
       "day": 1,
-      "tractor_id": "T08",
+      "tractor_id": "T06",
       "depot_id": "D02",
       "equipment_id": "DRY",
       "shipments": [
-        "S002",
+        "S012",
+        "S015"
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "type": "P",
+          "shipment_id": "S015",
+          "location_id": "F10",
+          "arrival": 9.0,
+          "service_start": 9.0,
+          "service_end": 9.5,
+          "break_after": false
+        },
+        {
+          "seq": 2,
+          "type": "P",
+          "shipment_id": "S012",
+          "location_id": "F12",
+          "arrival": 10.5,
+          "service_start": 10.5,
+          "service_end": 11.0,
+          "break_after": false
+        },
+        {
+          "seq": 3,
+          "type": "D",
+          "shipment_id": "S012",
+          "location_id": "F05",
+          "arrival": 12.75,
+          "service_start": 12.75,
+          "service_end": 13.25,
+          "break_after": false
+        },
+        {
+          "seq": 4,
+          "type": "D",
+          "shipment_id": "S015",
+          "location_id": "F07",
+          "arrival": 15.75,
+          "service_start": 15.75,
+          "service_end": 16.25,
+          "break_after": false
+        }
+      ],
+      "departure": 8.25,
+      "return": 17.0,
+      "miles": 321,
+      "drive_hours": 6.75,
+      "duty_hours": 8.75,
+      "cost_cad": 1000
+    },
+    {
+      "tour_id": 89,
+      "day": 1,
+      "tractor_id": "T07",
+      "depot_id": "D02",
+      "equipment_id": "DRY",
+      "shipments": [
+        "S008",
         "S013"
       ],
       "events": [
@@ -549,7 +494,7 @@
         {
           "seq": 2,
           "type": "P",
-          "shipment_id": "S002",
+          "shipment_id": "S008",
           "location_id": "F02",
           "arrival": 10.0,
           "service_start": 10.0,
@@ -559,47 +504,47 @@
         {
           "seq": 3,
           "type": "D",
-          "shipment_id": "S002",
-          "location_id": "F04",
-          "arrival": 12.5,
-          "service_start": 12.5,
-          "service_end": 13.0,
+          "shipment_id": "S013",
+          "location_id": "F07",
+          "arrival": 13.25,
+          "service_start": 13.25,
+          "service_end": 13.75,
           "break_after": false
         },
         {
           "seq": 4,
           "type": "D",
-          "shipment_id": "S013",
+          "shipment_id": "S008",
           "location_id": "F07",
-          "arrival": 14.0,
-          "service_start": 14.0,
-          "service_end": 14.5,
+          "arrival": 13.75,
+          "service_start": 13.75,
+          "service_end": 14.25,
           "break_after": false
         }
       ],
       "departure": 6.0,
-      "return": 15.25,
-      "miles": 349,
-      "drive_hours": 7.25,
-      "duty_hours": 9.25,
+      "return": 15.0,
+      "miles": 335,
+      "drive_hours": 7.0,
+      "duty_hours": 9.0,
       "cost_cad": 1000
     },
     {
-      "tour_id": 165,
-      "day": 2,
-      "tractor_id": "T01",
-      "depot_id": "D01",
+      "tour_id": 87,
+      "day": 1,
+      "tractor_id": "T08",
+      "depot_id": "D02",
       "equipment_id": "DRY",
       "shipments": [
-        "S021",
-        "S024"
+        "S006",
+        "S016"
       ],
       "events": [
         {
           "seq": 1,
           "type": "P",
-          "shipment_id": "S021",
-          "location_id": "F01",
+          "shipment_id": "S006",
+          "location_id": "F07",
           "arrival": 8.0,
           "service_start": 8.0,
           "service_end": 8.5,
@@ -608,127 +553,68 @@
         {
           "seq": 2,
           "type": "P",
-          "shipment_id": "S024",
-          "location_id": "F03",
-          "arrival": 10.5,
-          "service_start": 10.5,
-          "service_end": 11.0,
+          "shipment_id": "S016",
+          "location_id": "F05",
+          "arrival": 11.0,
+          "service_start": 11.0,
+          "service_end": 11.5,
           "break_after": false
         },
         {
           "seq": 3,
           "type": "D",
-          "shipment_id": "S021",
-          "location_id": "F05",
-          "arrival": 12.75,
-          "service_start": 12.75,
-          "service_end": 13.25,
+          "shipment_id": "S006",
+          "location_id": "F10",
+          "arrival": 14.0,
+          "service_start": 14.0,
+          "service_end": 14.5,
           "break_after": false
         },
         {
           "seq": 4,
           "type": "D",
+          "shipment_id": "S016",
+          "location_id": "F07",
+          "arrival": 15.75,
+          "service_start": 15.75,
+          "service_end": 16.25,
+          "break_after": false
+        }
+      ],
+      "departure": 7.25,
+      "return": 17.0,
+      "miles": 370,
+      "drive_hours": 7.75,
+      "duty_hours": 9.75,
+      "cost_cad": 1000
+    },
+    {
+      "tour_id": 272,
+      "day": 2,
+      "tractor_id": "T01",
+      "depot_id": "D01",
+      "equipment_id": "DRY",
+      "shipments": [
+        "S024",
+        "S031",
+        "S038"
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "type": "P",
           "shipment_id": "S024",
-          "location_id": "F01",
-          "arrival": 15.0,
-          "service_start": 15.0,
-          "service_end": 15.5,
-          "break_after": false
-        }
-      ],
-      "departure": 7.0,
-      "return": 16.5,
-      "miles": 367,
-      "drive_hours": 7.5,
-      "duty_hours": 9.5,
-      "cost_cad": 1000
-    },
-    {
-      "tour_id": 216,
-      "day": 2,
-      "tractor_id": "T02",
-      "depot_id": "D01",
-      "equipment_id": "DRY",
-      "shipments": [
-        "S026",
-        "S030"
-      ],
-      "events": [
-        {
-          "seq": 1,
-          "type": "P",
-          "shipment_id": "S030",
-          "location_id": "F01",
-          "arrival": 9.5,
-          "service_start": 9.5,
-          "service_end": 10.0,
-          "break_after": false
-        },
-        {
-          "seq": 2,
-          "type": "P",
-          "shipment_id": "S026",
-          "location_id": "F01",
-          "arrival": 10.0,
-          "service_start": 10.0,
-          "service_end": 10.5,
-          "break_after": false
-        },
-        {
-          "seq": 3,
-          "type": "D",
-          "shipment_id": "S026",
-          "location_id": "F05",
-          "arrival": 12.25,
-          "service_start": 12.5,
-          "service_end": 13.0,
-          "break_after": false
-        },
-        {
-          "seq": 4,
-          "type": "D",
-          "shipment_id": "S030",
           "location_id": "F03",
-          "arrival": 14.75,
-          "service_start": 14.75,
-          "service_end": 15.25,
-          "break_after": false
-        }
-      ],
-      "departure": 8.5,
-      "return": 17.25,
-      "miles": 317,
-      "drive_hours": 6.5,
-      "duty_hours": 8.75,
-      "cost_cad": 1000
-    },
-    {
-      "tour_id": 271,
-      "day": 2,
-      "tractor_id": "T03",
-      "depot_id": "D01",
-      "equipment_id": "DRY",
-      "shipments": [
-        "S023",
-        "S038",
-        "S039"
-      ],
-      "events": [
-        {
-          "seq": 1,
-          "type": "P",
-          "shipment_id": "S023",
-          "location_id": "F02",
-          "arrival": 7.5,
-          "service_start": 7.5,
-          "service_end": 8.0,
+          "arrival": 8.75,
+          "service_start": 8.75,
+          "service_end": 9.25,
           "break_after": false
         },
         {
           "seq": 2,
           "type": "P",
-          "shipment_id": "S038",
-          "location_id": "F09",
+          "shipment_id": "S031",
+          "location_id": "F03",
           "arrival": 9.25,
           "service_start": 9.25,
           "service_end": 9.75,
@@ -737,21 +623,21 @@
         {
           "seq": 3,
           "type": "P",
-          "shipment_id": "S039",
-          "location_id": "F04",
-          "arrival": 11.0,
-          "service_start": 11.0,
-          "service_end": 11.5,
+          "shipment_id": "S038",
+          "location_id": "F09",
+          "arrival": 12.0,
+          "service_start": 12.0,
+          "service_end": 12.5,
           "break_after": false
         },
         {
           "seq": 4,
           "type": "D",
-          "shipment_id": "S023",
-          "location_id": "F06",
+          "shipment_id": "S031",
+          "location_id": "F09",
           "arrival": 12.5,
-          "service_start": 12.5,
-          "service_end": 13.0,
+          "service_start": 13.0,
+          "service_end": 13.5,
           "break_after": false
         },
         {
@@ -759,55 +645,55 @@
           "type": "D",
           "shipment_id": "S038",
           "location_id": "F11",
-          "arrival": 14.0,
-          "service_start": 14.0,
-          "service_end": 14.5,
+          "arrival": 14.75,
+          "service_start": 14.75,
+          "service_end": 15.25,
           "break_after": false
         },
         {
           "seq": 6,
           "type": "D",
-          "shipment_id": "S039",
-          "location_id": "F11",
-          "arrival": 14.5,
-          "service_start": 14.5,
-          "service_end": 15.0,
+          "shipment_id": "S024",
+          "location_id": "F01",
+          "arrival": 16.0,
+          "service_start": 16.0,
+          "service_end": 16.5,
           "break_after": false
         }
       ],
-      "departure": 6.0,
-      "return": 16.5,
-      "miles": 345,
-      "drive_hours": 7.5,
-      "duty_hours": 10.5,
+      "departure": 6.75,
+      "return": 17.5,
+      "miles": 340,
+      "drive_hours": 7.25,
+      "duty_hours": 10.75,
       "cost_cad": 1100
     },
     {
-      "tour_id": 239,
+      "tour_id": 220,
       "day": 2,
-      "tractor_id": "T04",
+      "tractor_id": "T02",
       "depot_id": "D01",
       "equipment_id": "DRY",
       "shipments": [
-        "S031",
-        "S033"
+        "S027",
+        "S030"
       ],
       "events": [
         {
           "seq": 1,
           "type": "P",
-          "shipment_id": "S033",
-          "location_id": "F03",
-          "arrival": 9.5,
-          "service_start": 9.5,
-          "service_end": 10.0,
+          "shipment_id": "S030",
+          "location_id": "F01",
+          "arrival": 8.5,
+          "service_start": 8.5,
+          "service_end": 9.0,
           "break_after": false
         },
         {
           "seq": 2,
           "type": "P",
-          "shipment_id": "S031",
-          "location_id": "F03",
+          "shipment_id": "S027",
+          "location_id": "F08",
           "arrival": 10.0,
           "service_start": 10.0,
           "service_end": 10.5,
@@ -816,17 +702,17 @@
         {
           "seq": 3,
           "type": "D",
-          "shipment_id": "S031",
-          "location_id": "F09",
-          "arrival": 12.75,
-          "service_start": 13.0,
-          "service_end": 13.5,
+          "shipment_id": "S030",
+          "location_id": "F03",
+          "arrival": 12.0,
+          "service_start": 12.0,
+          "service_end": 12.5,
           "break_after": false
         },
         {
           "seq": 4,
           "type": "D",
-          "shipment_id": "S033",
+          "shipment_id": "S027",
           "location_id": "F11",
           "arrival": 14.75,
           "service_start": 14.75,
@@ -836,48 +722,166 @@
       ],
       "departure": 7.5,
       "return": 16.75,
-      "miles": 332,
-      "drive_hours": 7.0,
+      "miles": 339,
+      "drive_hours": 7.25,
       "duty_hours": 9.25,
       "cost_cad": 1000
     },
     {
-      "tour_id": 223,
+      "tour_id": 187,
       "day": 2,
-      "tractor_id": "T05",
-      "depot_id": "D02",
+      "tractor_id": "T03",
+      "depot_id": "D01",
       "equipment_id": "DRY",
       "shipments": [
-        "S027",
-        "S032"
+        "S023",
+        "S033"
       ],
       "events": [
         {
           "seq": 1,
           "type": "P",
-          "shipment_id": "S032",
-          "location_id": "F11",
-          "arrival": 9.5,
-          "service_start": 9.5,
-          "service_end": 10.0,
+          "shipment_id": "S033",
+          "location_id": "F03",
+          "arrival": 8.0,
+          "service_start": 8.0,
+          "service_end": 8.5,
           "break_after": false
         },
         {
           "seq": 2,
           "type": "P",
-          "shipment_id": "S027",
-          "location_id": "F08",
-          "arrival": 11.0,
-          "service_start": 11.0,
-          "service_end": 11.5,
+          "shipment_id": "S023",
+          "location_id": "F02",
+          "arrival": 10.0,
+          "service_start": 10.0,
+          "service_end": 10.5,
           "break_after": false
         },
         {
           "seq": 3,
           "type": "D",
-          "shipment_id": "S027",
+          "shipment_id": "S023",
+          "location_id": "F06",
+          "arrival": 12.25,
+          "service_start": 12.25,
+          "service_end": 12.75,
+          "break_after": false
+        },
+        {
+          "seq": 4,
+          "type": "D",
+          "shipment_id": "S033",
           "location_id": "F11",
+          "arrival": 13.75,
+          "service_start": 13.75,
+          "service_end": 14.25,
+          "break_after": false
+        }
+      ],
+      "departure": 6.0,
+      "return": 15.75,
+      "miles": 371,
+      "drive_hours": 7.75,
+      "duty_hours": 9.75,
+      "cost_cad": 1000
+    },
+    {
+      "tour_id": 166,
+      "day": 2,
+      "tractor_id": "T04",
+      "depot_id": "D01",
+      "equipment_id": "DRY",
+      "shipments": [
+        "S021",
+        "S026"
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "type": "P",
+          "shipment_id": "S021",
+          "location_id": "F01",
+          "arrival": 9.25,
+          "service_start": 9.25,
+          "service_end": 9.75,
+          "break_after": false
+        },
+        {
+          "seq": 2,
+          "type": "P",
+          "shipment_id": "S026",
+          "location_id": "F01",
+          "arrival": 9.75,
+          "service_start": 9.75,
+          "service_end": 10.25,
+          "break_after": false
+        },
+        {
+          "seq": 3,
+          "type": "D",
+          "shipment_id": "S021",
+          "location_id": "F05",
+          "arrival": 12.0,
+          "service_start": 12.0,
+          "service_end": 12.5,
+          "break_after": false
+        },
+        {
+          "seq": 4,
+          "type": "D",
+          "shipment_id": "S026",
+          "location_id": "F05",
           "arrival": 12.5,
+          "service_start": 12.5,
+          "service_end": 13.0,
+          "break_after": false
+        }
+      ],
+      "departure": 8.25,
+      "return": 15.5,
+      "miles": 248,
+      "drive_hours": 5.25,
+      "duty_hours": 7.25,
+      "cost_cad": 1000
+    },
+    {
+      "tour_id": 265,
+      "day": 2,
+      "tractor_id": "T05",
+      "depot_id": "D02",
+      "equipment_id": "DRY",
+      "shipments": [
+        "S036",
+        "S040"
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "type": "P",
+          "shipment_id": "S036",
+          "location_id": "F12",
+          "arrival": 8.5,
+          "service_start": 8.5,
+          "service_end": 9.0,
+          "break_after": false
+        },
+        {
+          "seq": 2,
+          "type": "P",
+          "shipment_id": "S040",
+          "location_id": "F04",
+          "arrival": 10.0,
+          "service_start": 10.0,
+          "service_end": 10.5,
+          "break_after": false
+        },
+        {
+          "seq": 3,
+          "type": "D",
+          "shipment_id": "S040",
+          "location_id": "F03",
+          "arrival": 11.5,
           "service_start": 12.5,
           "service_end": 13.0,
           "break_after": false
@@ -885,19 +889,19 @@
         {
           "seq": 4,
           "type": "D",
-          "shipment_id": "S032",
-          "location_id": "F07",
-          "arrival": 15.25,
-          "service_start": 15.25,
-          "service_end": 15.75,
+          "shipment_id": "S036",
+          "location_id": "F04",
+          "arrival": 14.0,
+          "service_start": 14.0,
+          "service_end": 14.5,
           "break_after": false
         }
       ],
-      "departure": 6.5,
-      "return": 16.5,
-      "miles": 373,
-      "drive_hours": 8.0,
-      "duty_hours": 10.0,
+      "departure": 6.75,
+      "return": 16.0,
+      "miles": 282,
+      "drive_hours": 6.25,
+      "duty_hours": 9.25,
       "cost_cad": 1000
     },
     {
@@ -1019,31 +1023,31 @@
       "cost_cad": 1000
     },
     {
-      "tour_id": 265,
+      "tour_id": 246,
       "day": 2,
       "tractor_id": "T08",
       "depot_id": "D02",
       "equipment_id": "DRY",
       "shipments": [
-        "S036",
-        "S040"
+        "S032",
+        "S039"
       ],
       "events": [
         {
           "seq": 1,
           "type": "P",
-          "shipment_id": "S036",
-          "location_id": "F12",
-          "arrival": 8.5,
-          "service_start": 8.5,
-          "service_end": 9.0,
+          "shipment_id": "S039",
+          "location_id": "F04",
+          "arrival": 7.75,
+          "service_start": 7.75,
+          "service_end": 8.25,
           "break_after": false
         },
         {
           "seq": 2,
           "type": "P",
-          "shipment_id": "S040",
-          "location_id": "F04",
+          "shipment_id": "S032",
+          "location_id": "F11",
           "arrival": 10.0,
           "service_start": 10.0,
           "service_end": 10.5,
@@ -1052,68 +1056,68 @@
         {
           "seq": 3,
           "type": "D",
-          "shipment_id": "S040",
-          "location_id": "F03",
-          "arrival": 11.5,
-          "service_start": 12.5,
-          "service_end": 13.0,
+          "shipment_id": "S039",
+          "location_id": "F11",
+          "arrival": 10.5,
+          "service_start": 12.0,
+          "service_end": 12.5,
           "break_after": false
         },
         {
           "seq": 4,
           "type": "D",
-          "shipment_id": "S036",
-          "location_id": "F04",
-          "arrival": 14.0,
-          "service_start": 14.0,
-          "service_end": 14.5,
+          "shipment_id": "S032",
+          "location_id": "F07",
+          "arrival": 14.75,
+          "service_start": 14.75,
+          "service_end": 15.25,
           "break_after": false
         }
       ],
-      "departure": 6.75,
+      "departure": 6.25,
       "return": 16.0,
-      "miles": 282,
+      "miles": 294,
       "drive_hours": 6.25,
-      "duty_hours": 9.25,
+      "duty_hours": 9.75,
       "cost_cad": 1000
     },
     {
-      "tour_id": 364,
+      "tour_id": 363,
       "day": 3,
       "tractor_id": "T01",
       "depot_id": "D01",
       "equipment_id": "DRY",
       "shipments": [
         "S051",
-        "S053"
+        "S052"
       ],
       "events": [
         {
           "seq": 1,
           "type": "P",
-          "shipment_id": "S051",
-          "location_id": "F03",
-          "arrival": 8.5,
-          "service_start": 8.5,
-          "service_end": 9.0,
+          "shipment_id": "S052",
+          "location_id": "F05",
+          "arrival": 9.25,
+          "service_start": 9.25,
+          "service_end": 9.75,
           "break_after": false
         },
         {
           "seq": 2,
           "type": "P",
-          "shipment_id": "S053",
-          "location_id": "F04",
-          "arrival": 10.0,
-          "service_start": 10.0,
-          "service_end": 10.5,
+          "shipment_id": "S051",
+          "location_id": "F03",
+          "arrival": 11.5,
+          "service_start": 11.5,
+          "service_end": 12.0,
           "break_after": false
         },
         {
           "seq": 3,
           "type": "D",
-          "shipment_id": "S051",
-          "location_id": "F02",
-          "arrival": 12.5,
+          "shipment_id": "S052",
+          "location_id": "F03",
+          "arrival": 12.0,
           "service_start": 13.0,
           "service_end": 13.5,
           "break_after": false
@@ -1121,29 +1125,29 @@
         {
           "seq": 4,
           "type": "D",
-          "shipment_id": "S053",
-          "location_id": "F08",
-          "arrival": 14.0,
-          "service_start": 14.0,
-          "service_end": 14.5,
+          "shipment_id": "S051",
+          "location_id": "F02",
+          "arrival": 15.0,
+          "service_start": 15.0,
+          "service_end": 15.5,
           "break_after": false
         }
       ],
-      "departure": 6.5,
-      "return": 15.5,
-      "miles": 322,
-      "drive_hours": 6.5,
-      "duty_hours": 9.0,
+      "departure": 6.75,
+      "return": 17.0,
+      "miles": 337,
+      "drive_hours": 7.25,
+      "duty_hours": 10.25,
       "cost_cad": 1000
     },
     {
-      "tour_id": 371,
+      "tour_id": 360,
       "day": 3,
       "tractor_id": "T02",
       "depot_id": "D01",
       "equipment_id": "DRY",
       "shipments": [
-        "S052",
+        "S050",
         "S057"
       ],
       "events": [
@@ -1152,27 +1156,27 @@
           "type": "P",
           "shipment_id": "S057",
           "location_id": "F02",
-          "arrival": 8.0,
-          "service_start": 8.0,
-          "service_end": 8.5,
+          "arrival": 8.5,
+          "service_start": 8.5,
+          "service_end": 9.0,
           "break_after": false
         },
         {
           "seq": 2,
           "type": "P",
-          "shipment_id": "S052",
-          "location_id": "F05",
-          "arrival": 9.5,
-          "service_start": 9.5,
-          "service_end": 10.0,
+          "shipment_id": "S050",
+          "location_id": "F03",
+          "arrival": 10.5,
+          "service_start": 10.5,
+          "service_end": 11.0,
           "break_after": false
         },
         {
           "seq": 3,
           "type": "D",
-          "shipment_id": "S057",
-          "location_id": "F11",
-          "arrival": 11.25,
+          "shipment_id": "S050",
+          "location_id": "F08",
+          "arrival": 12.5,
           "service_start": 12.5,
           "service_end": 13.0,
           "break_after": false
@@ -1180,76 +1184,17 @@
         {
           "seq": 4,
           "type": "D",
-          "shipment_id": "S052",
-          "location_id": "F03",
-          "arrival": 15.25,
-          "service_start": 15.25,
-          "service_end": 15.75,
-          "break_after": false
-        }
-      ],
-      "departure": 6.5,
-      "return": 17.75,
-      "miles": 372,
-      "drive_hours": 8.0,
-      "duty_hours": 11.25,
-      "cost_cad": 1000
-    },
-    {
-      "tour_id": 359,
-      "day": 3,
-      "tractor_id": "T03",
-      "depot_id": "D01",
-      "equipment_id": "DRY",
-      "shipments": [
-        "S050",
-        "S054"
-      ],
-      "events": [
-        {
-          "seq": 1,
-          "type": "P",
-          "shipment_id": "S050",
-          "location_id": "F03",
-          "arrival": 9.0,
-          "service_start": 9.0,
-          "service_end": 9.5,
-          "break_after": false
-        },
-        {
-          "seq": 2,
-          "type": "P",
-          "shipment_id": "S054",
-          "location_id": "F03",
-          "arrival": 9.5,
-          "service_start": 9.5,
-          "service_end": 10.0,
-          "break_after": false
-        },
-        {
-          "seq": 3,
-          "type": "D",
-          "shipment_id": "S054",
-          "location_id": "F09",
-          "arrival": 12.25,
-          "service_start": 12.25,
-          "service_end": 12.75,
-          "break_after": false
-        },
-        {
-          "seq": 4,
-          "type": "D",
-          "shipment_id": "S050",
-          "location_id": "F08",
-          "arrival": 14.5,
-          "service_start": 14.5,
-          "service_end": 15.0,
+          "shipment_id": "S057",
+          "location_id": "F11",
+          "arrival": 14.0,
+          "service_start": 14.0,
+          "service_end": 14.5,
           "break_after": false
         }
       ],
       "departure": 7.0,
       "return": 16.0,
-      "miles": 330,
+      "miles": 326,
       "drive_hours": 7.0,
       "duty_hours": 9.0,
       "cost_cad": 1000
@@ -1257,7 +1202,7 @@
     {
       "tour_id": 386,
       "day": 3,
-      "tractor_id": "T04",
+      "tractor_id": "T03",
       "depot_id": "D01",
       "equipment_id": "DRY",
       "shipments": [
@@ -1314,9 +1259,127 @@
       "cost_cad": 1000
     },
     {
-      "tour_id": 395,
+      "tour_id": 373,
+      "day": 3,
+      "tractor_id": "T04",
+      "depot_id": "D01",
+      "equipment_id": "DRY",
+      "shipments": [
+        "S053",
+        "S054"
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "type": "P",
+          "shipment_id": "S054",
+          "location_id": "F03",
+          "arrival": 8.5,
+          "service_start": 8.5,
+          "service_end": 9.0,
+          "break_after": false
+        },
+        {
+          "seq": 2,
+          "type": "P",
+          "shipment_id": "S053",
+          "location_id": "F04",
+          "arrival": 10.0,
+          "service_start": 10.0,
+          "service_end": 10.5,
+          "break_after": false
+        },
+        {
+          "seq": 3,
+          "type": "D",
+          "shipment_id": "S054",
+          "location_id": "F09",
+          "arrival": 11.75,
+          "service_start": 12.0,
+          "service_end": 12.5,
+          "break_after": false
+        },
+        {
+          "seq": 4,
+          "type": "D",
+          "shipment_id": "S053",
+          "location_id": "F08",
+          "arrival": 14.25,
+          "service_start": 14.25,
+          "service_end": 14.75,
+          "break_after": false
+        }
+      ],
+      "departure": 6.5,
+      "return": 15.75,
+      "miles": 330,
+      "drive_hours": 7.0,
+      "duty_hours": 9.25,
+      "cost_cad": 1000
+    },
+    {
+      "tour_id": 388,
       "day": 3,
       "tractor_id": "T05",
+      "depot_id": "D02",
+      "equipment_id": "DRY",
+      "shipments": [
+        "S056",
+        "S058"
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "type": "P",
+          "shipment_id": "S058",
+          "location_id": "F04",
+          "arrival": 9.0,
+          "service_start": 9.0,
+          "service_end": 9.5,
+          "break_after": false
+        },
+        {
+          "seq": 2,
+          "type": "P",
+          "shipment_id": "S056",
+          "location_id": "F03",
+          "arrival": 10.5,
+          "service_start": 10.5,
+          "service_end": 11.0,
+          "break_after": false
+        },
+        {
+          "seq": 3,
+          "type": "D",
+          "shipment_id": "S058",
+          "location_id": "F12",
+          "arrival": 14.25,
+          "service_start": 14.25,
+          "service_end": 14.75,
+          "break_after": false
+        },
+        {
+          "seq": 4,
+          "type": "D",
+          "shipment_id": "S056",
+          "location_id": "F12",
+          "arrival": 14.75,
+          "service_start": 14.75,
+          "service_end": 15.25,
+          "break_after": false
+        }
+      ],
+      "departure": 7.5,
+      "return": 17.0,
+      "miles": 351,
+      "drive_hours": 7.5,
+      "duty_hours": 9.5,
+      "cost_cad": 1000
+    },
+    {
+      "tour_id": 395,
+      "day": 3,
+      "tractor_id": "T06",
       "depot_id": "D02",
       "equipment_id": "DRY",
       "shipments": [
@@ -1394,127 +1457,9 @@
       "cost_cad": 1100
     },
     {
-      "tour_id": 312,
-      "day": 3,
-      "tractor_id": "T06",
-      "depot_id": "D02",
-      "equipment_id": "DRY",
-      "shipments": [
-        "S042",
-        "S048"
-      ],
-      "events": [
-        {
-          "seq": 1,
-          "type": "P",
-          "shipment_id": "S048",
-          "location_id": "F07",
-          "arrival": 8.75,
-          "service_start": 8.75,
-          "service_end": 9.25,
-          "break_after": false
-        },
-        {
-          "seq": 2,
-          "type": "P",
-          "shipment_id": "S042",
-          "location_id": "F12",
-          "arrival": 11.0,
-          "service_start": 11.0,
-          "service_end": 11.5,
-          "break_after": false
-        },
-        {
-          "seq": 3,
-          "type": "D",
-          "shipment_id": "S048",
-          "location_id": "F12",
-          "arrival": 11.5,
-          "service_start": 12.5,
-          "service_end": 13.0,
-          "break_after": false
-        },
-        {
-          "seq": 4,
-          "type": "D",
-          "shipment_id": "S042",
-          "location_id": "F06",
-          "arrival": 14.75,
-          "service_start": 14.75,
-          "service_end": 15.25,
-          "break_after": false
-        }
-      ],
-      "departure": 8.0,
-      "return": 17.25,
-      "miles": 290,
-      "drive_hours": 6.25,
-      "duty_hours": 9.25,
-      "cost_cad": 1000
-    },
-    {
-      "tour_id": 388,
-      "day": 3,
-      "tractor_id": "T07",
-      "depot_id": "D02",
-      "equipment_id": "DRY",
-      "shipments": [
-        "S056",
-        "S058"
-      ],
-      "events": [
-        {
-          "seq": 1,
-          "type": "P",
-          "shipment_id": "S058",
-          "location_id": "F04",
-          "arrival": 9.0,
-          "service_start": 9.0,
-          "service_end": 9.5,
-          "break_after": false
-        },
-        {
-          "seq": 2,
-          "type": "P",
-          "shipment_id": "S056",
-          "location_id": "F03",
-          "arrival": 10.5,
-          "service_start": 10.5,
-          "service_end": 11.0,
-          "break_after": false
-        },
-        {
-          "seq": 3,
-          "type": "D",
-          "shipment_id": "S058",
-          "location_id": "F12",
-          "arrival": 14.25,
-          "service_start": 14.25,
-          "service_end": 14.75,
-          "break_after": false
-        },
-        {
-          "seq": 4,
-          "type": "D",
-          "shipment_id": "S056",
-          "location_id": "F12",
-          "arrival": 14.75,
-          "service_start": 14.75,
-          "service_end": 15.25,
-          "break_after": false
-        }
-      ],
-      "departure": 7.5,
-      "return": 17.0,
-      "miles": 351,
-      "drive_hours": 7.5,
-      "duty_hours": 9.5,
-      "cost_cad": 1000
-    },
-    {
       "tour_id": 337,
       "day": 3,
-      "tractor_id": "T08",
+      "tractor_id": "T07",
       "depot_id": "D02",
       "equipment_id": "DRY",
       "shipments": [
@@ -1569,16 +1514,75 @@
       "drive_hours": 8.0,
       "duty_hours": 10.0,
       "cost_cad": 1000
+    },
+    {
+      "tour_id": 312,
+      "day": 3,
+      "tractor_id": "T08",
+      "depot_id": "D02",
+      "equipment_id": "DRY",
+      "shipments": [
+        "S042",
+        "S048"
+      ],
+      "events": [
+        {
+          "seq": 1,
+          "type": "P",
+          "shipment_id": "S048",
+          "location_id": "F07",
+          "arrival": 8.75,
+          "service_start": 8.75,
+          "service_end": 9.25,
+          "break_after": false
+        },
+        {
+          "seq": 2,
+          "type": "P",
+          "shipment_id": "S042",
+          "location_id": "F12",
+          "arrival": 11.0,
+          "service_start": 11.0,
+          "service_end": 11.5,
+          "break_after": false
+        },
+        {
+          "seq": 3,
+          "type": "D",
+          "shipment_id": "S048",
+          "location_id": "F12",
+          "arrival": 11.5,
+          "service_start": 12.5,
+          "service_end": 13.0,
+          "break_after": false
+        },
+        {
+          "seq": 4,
+          "type": "D",
+          "shipment_id": "S042",
+          "location_id": "F06",
+          "arrival": 14.75,
+          "service_start": 14.75,
+          "service_end": 15.25,
+          "break_after": false
+        }
+      ],
+      "departure": 8.0,
+      "return": 17.25,
+      "miles": 290,
+      "drive_hours": 6.25,
+      "duty_hours": 9.25,
+      "cost_cad": 1000
     }
   ],
   "ltl": [
     {
-      "shipment_id": "S007",
-      "cost_cad": 2375.9
+      "shipment_id": "S002",
+      "cost_cad": 1345.5
     },
     {
-      "shipment_id": "S008",
-      "cost_cad": 1345.5
+      "shipment_id": "S007",
+      "cost_cad": 2375.9
     },
     {
       "shipment_id": "S022",

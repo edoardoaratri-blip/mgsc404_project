@@ -5,7 +5,7 @@
     "instance": "simplified",
     "method": "greedy savings heuristic",
     "candidate_tours": 398,
-    "runtime_s": 0.001,
+    "runtime_s": 0.0,
     "all_ltl_baseline": 93298.35,
     "tl_cost": 24400,
     "ltl_cost": 11949.65,

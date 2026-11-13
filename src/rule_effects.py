@@ -5,7 +5,9 @@
 # switched off on its own, keeping everything else identical (same data, same tour generation, same
 # Gurobi model). The cost difference is what that single rule costs the company.
 # The relaxed plans break a real rule, so they are NOT valid plans: they live in outputs/whatif/ and
-# are only used for this table.
+# are only used for this table. The last row is different: counting a wait of 30+ minutes as the
+# driver break is an alternative reading the instructor allowed; we keep the stricter rule and report
+# here what the alternative would save.
 
 import json
 import subprocess
@@ -17,7 +19,8 @@ CASES = [("none", "All rules (the real plan)"),
          ("no_compat", "Without compatibility (groups may mix)"),
          ("no_reefer", "Without refrigerated equipment (chilled on DRY)"),
          ("no_hours", "Without facility opening hours (open 0-24)"),
-         ("no_break", "Without the 30-minute driver break")]
+         ("no_break", "Without the 30-minute driver break"),
+         ("wait_break", "Waiting of 30+ min counts as the break (allowed alternative)")]
 
 results = []
 for relax, label in CASES:
